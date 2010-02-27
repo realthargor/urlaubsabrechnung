@@ -1,0 +1,233 @@
+﻿{% extends "project_base_en.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+		project_id = "{{ project_key }}";
+		
+		function removeButtonClick(event)
+		{
+			new Ajax.Request("/accounts", {   
+					method: 'post',   
+					parameters: { Action: 'Remove', Group: $F('group_list'), Members: $F('member_list').toJSON() },
+					onSuccess: function(transport) {
+						$('person_list').update(transport.responseText); 
+					}
+				}); 	  		
+		}
+		
+		// updates the list of all members
+		function updateMemberList()
+		{
+			new Ajax.Updater('member_list', '/accounts', { 
+				method: 'post', 
+				parameters: { 
+					project: project_id, 
+					action: 'members', 
+					group: $F('group_list') 
+				} 
+			});
+		}
+					
+		document.observe("dom:loaded", function ()
+		{   
+			// add on click function to all table rows
+			$('group_list').observe('change', updateMemberList);
+			
+			// add selected accounts to the member list of the currently selected group
+			$('member_add').observe('click', function(event){
+				new Ajax.Updater('member_list' , '/accounts', { 
+					method: 'post', 
+					parameters: { 
+						project: project_id, 
+						action: 'member_add', 
+						member_weight: $F('member_weight'),
+						group: $F('group_list'),
+						account_key_list: $F('person_list').toJSON()
+					} 
+				});
+			});
+
+			// add selected accounts to the member list of the currently selected group
+			$('member_remove').observe('click', function(event){
+				new Ajax.Updater('member_list' , '/accounts', { 
+					method: 'post', 
+					parameters: { 
+						project: project_id, 
+						action: 'member_remove', 
+						group: $F('group_list'),
+						member_list: $F('member_list').toJSON()
+					} 
+				});
+			});
+			
+			
+			// add a new person
+			$('person_add').observe('click', function(event){
+				new Ajax.Updater('person_list' , '/accounts', { 
+					method: 'post', 
+					parameters: { 
+						project: project_id, 
+						action: 'person_add', 
+						name: $F('person_name') 
+					} 
+				});
+				$F('person_name')='';
+			});
+
+			// rename a existing person
+			$('person_rename').observe('click', function(event){
+				new Ajax.Request('/accounts', { 
+					method: 'post', 
+					parameters: { 
+						project: project_id, 
+						action: 'person_rename',
+						account: $F('person_list'),
+						name: $F('person_name') 
+					},
+					onSuccess: function(transport) { 
+						$('person_list').update(transport.responseText); 
+						updateMemberList(); 	// because the name might have changed
+					}
+				});
+				$F('person_name')='';
+			});
+			
+			
+			// remove the selected persons from the list
+			$('person_remove').observe('click', function(event){
+				new Ajax.Updater('person_list' , '/accounts', { 
+					method: 'post', 
+					parameters: { 
+						project: project_id, 
+						action: 'person_remove', 
+						person_list: $F('person_list').toJSON()
+					} 
+				});
+				$F('person_name')='';
+			});
+			
+			// rename a existing group
+			$('group_rename').observe('click', function(event){
+				new Ajax.Updater('group_list' , '/accounts', { 
+					method: 'post', 
+					parameters: { 
+						project: project_id, 
+						action: 'group_rename',
+						person: $F('group_list'),
+						name: $F('group_name') 
+					} 
+				});
+				$F('group_name')='';
+			});
+
+			
+			// add a new group
+			$('group_add').observe('click', function(event) {
+				new Ajax.Request('/accounts', { 
+					method: 'post', 
+					parameters: { 
+						project: project_id, 
+						action: 'group_add', 
+						name: $F('group_name')  
+					},
+					onSuccess: function(transport) { 
+						$('group_list').update(transport.responseText); 
+						updateMemberList(); 
+					}
+				});
+				$F('group_name')='';
+			});
+			
+			// remove the currently selected group
+			$('group_remove').observe('click', function(event){
+				new Ajax.Request("/accounts", {
+						method: 'post',   
+						parameters: { 
+							project: project_id, 
+							action: 'group_remove',
+							group: $F('group_list'),
+						},
+						onSuccess: function(transport) { 
+							$('group_list').update(transport.responseText); 
+							updateMemberList(); 
+						}
+					});
+				$F('group_name')='';
+			});
+			
+			// fill group and person list's
+			new Ajax.Request('/accounts', { 
+				method: 'post', 
+				parameters: { 
+					project: project_id, 
+					action: 'list', 
+					type: 'group'
+				},
+				onSuccess: function(transport) { 
+					$('group_list').update(transport.responseText); 
+					updateMemberList(); 
+				}
+			});
+			new Ajax.Updater('person_list', '/accounts', { method: 'post', parameters: { project: project_id, action: 'list', type: 'person' } });
+		});
+		
+		Ajax.Responders.register({
+			onCreate: function() {
+				$('progress').show();
+				$('account_form').disable();
+			},
+			onComplete: function() {
+				$('account_form').enable();
+				$('progress').hide();
+			},
+		});
+	</script>
+{% endblock %}
+
+{% block body %}
+<form id="account_form">
+  <fieldset>
+  	<legend>Accounts</legend>
+  	<table>
+		<tr>
+			<td>
+				Groups
+			</td>
+			<td>
+				Members
+			</td>
+			<td>
+				Persons
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="text" id="group_name" size="6"/>
+				<button name="action" type="button" id="group_add">new</button><br/>
+				<button name="action" type="button" id="group_rename">rename</button>
+				<button name="action" type="button" id="group_remove">delete</button>
+			</td>
+			<td>
+				<label for="weight">Weight</label>
+				<input type="text" name="weight" id="member_weight" size="1" value="1" maxlength="4"/>
+				<button name="action" type="button" id="member_add">add</button><br/>
+				<button name="action" type="button" id="member_remove">remove</button>
+			</td>
+			<td>
+				<input type="text" id="person_name" size="6"/>
+				<button name="action" type="button" id="person_add">new</button><br/>
+				<button name="action" type="button" id="person_rename">rename</button>
+				<button name="action" type="button" id="person_remove">delete</button>
+			</td>		
+		</tr>
+		<tr>
+			<td><select class="fixedSizeSelect" id="group_list"  size="10"                    ></select></td>
+			<td><select class="fixedSizeSelect" id="member_list" size="10" multiple="multiple"></select></td>
+			<td><select class="fixedSizeSelect" id="person_list" size="10" multiple="multiple"></select></td>
+		</tr>
+  	</table>  
+  </fieldset>
+</form>
+<p id="progress" style="display: none;">Updating memberships&#8230;</p>
+<p id="result"></p>
+{% endblock %}

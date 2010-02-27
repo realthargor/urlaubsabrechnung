@@ -1,0 +1,70 @@
+﻿{% extends "base_en.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+		function project_DeleteClick(key)
+		{
+			new Ajax.Request("/", {   
+				method: 'post',
+				parameters: {
+					action: 'delete', 
+					project: key,
+				},
+				onSuccess: function(transport) 
+				{ 
+					location.href=transport.responseText;
+				},
+				onFailure: function(transport)
+				{
+					alert(transport.responseText);
+				}
+			}); 
+			return false;
+		}
+		
+		function project_AddClick(event)
+		{
+			new Ajax.Request("/", {   
+				method: 'post',
+				parameters: {
+					action: 'add', 
+					name: $F('project_name'),
+					currency: $F('project_currency'),					
+				},
+				onSuccess: function(transport) 
+				{ 
+					location.href=transport.responseText;
+				},
+				onFailure: function(transport)
+				{
+					alert(transport.responseText);
+				}
+			}); 
+			return false;
+		}
+	</script>
+{% endblock %}
+
+{% block body %}
+	<h1>My Projects</h1>
+	<ul>
+	{% for project in projects %}
+		<li>
+			<a href="/summary?project={{ project.id }}">{{ project.name }}</a>&nbsp;
+			<button id="project_add" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.id }}')">X</button>
+		</li>
+	{% endfor %}	
+	</ul>
+	<form id="newProjectForm" enctype="multipart/form-data" onsubmit="return false;">
+		<fieldset>
+			<legend>Add new project</legend>
+			<label for="project_name">Name</label>
+			<input id="project_name" type="text" name="TEXT" size="20" VALUE=""/>
+						
+			<label for="project_currency">Currency</label>
+			<input id="project_currency" type="text" name="TEXT" size="5" VALUE="€"/>
+						
+			<button id="project_add" type="submit" name="Action" value="Add" onclick="project_AddClick()">Add me</button>
+		</fieldset>
+	</form>
+{% endblock %}

@@ -1,0 +1,75 @@
+﻿{% extends "project_base_en.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+		project_id = "{{ project_key }}";
+		function deleteClick(key)
+		{
+			new Ajax.Request("/currencies", {   
+				method: 'post',
+				parameters: {
+					action: 'delete', 
+					project: project_id,
+					key: 
+				},
+				onSuccess: function(transport) 
+				{ 
+					location.href=transport.responseText;
+				},
+				onFailure: function(transport)
+				{
+					alert(transport.responseText);
+				}
+			}); 
+			return false;
+		}
+		
+		function project_AddClick(event)
+		{
+			new Ajax.Request("/", {   
+				method: 'post',
+				parameters: {
+					action: 'add', 
+					name: $F('project_name'),
+					currency: $F('project_currency'),					
+				},
+				onSuccess: function(transport) 
+				{ 
+					location.href=transport.responseText;
+				},
+				onFailure: function(transport)
+				{
+					alert(transport.responseText);
+				}
+			}); 
+			return false;
+		}
+	</script>
+{% endblock %}
+
+{% block body %}
+	<h1>Currencies</h1> 
+	<p>Project currency is <b><span id="project_currency">{{ project.currency }}</span></b></p>
+	<ul>
+	{% for c in currencies %}
+		<li>
+			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="key" size="6" value="{{c.key}}"></input>
+				Name
+				<input type="text" name="divisor" size="6" value="{{c.divisor}}"></input>
+				<input type="text" name="name" size="6" value="{{c.name}}"></input> = 1 {{ project.currency }}
+				<input type="Submit" name="action" value="update"/>
+				<input type="Submit" name="action" value="delete"/>
+			</form>
+		</li>
+	{% endfor %}
+		<li>
+			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
+				Name
+				<input type="text" name="divisor" size="6" value="1"></input>
+				<input type="text" name="name" size="6" value="new"></input> = 1 {{ project.currency }}
+				<input type="Submit" name="action" value="add"/>
+			</form>
+		</li>
+	</ul>
+{% endblock %}
