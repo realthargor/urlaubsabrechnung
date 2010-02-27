@@ -1,0 +1,172 @@
+﻿{% extends "project_base_en.html" %}
+
+{% block head %}
+	<script type="text/javascript">
+		project_id = "{{ project_key }}";		
+		
+		function transaction_SubmitClick(event)
+		{
+			new Ajax.Request("/transactions", {   
+				method: 'post',
+				parameters: {
+					action: 'update', 
+					project: project_id, 
+					transaction: $F('transaction_key'),
+					date: $F('transaction_date'),
+					source: $F('transaction_source'),					
+					dest: $F('transaction_dest'),
+					ammount: $F('transaction_ammount'),
+					currency: $F('transaction_currency'),
+					text: $F('transaction_text')
+				},
+				onSuccess: function(transport) 
+				{ 
+					$('transactions').update(transport.responseText);
+					$$('tr.transaction').invoke('observe', 'click', transactionClick);
+				},
+				onFailure: function(transport)
+				{
+					alert(transport.responseText);
+				},
+				onComplete: function(transport) {
+					$('teditform').addClassName("hidden");
+				}
+			}); 
+			return false;
+		}
+		
+		function transaction_DeleteClick(event)
+		{
+			new Ajax.Request("/transactions", {   
+				method: 'post',
+				parameters: {
+					action: 'delete', 
+					project: project_id, 
+					transaction: $F('transaction_key'),
+				},
+				onSuccess: function(transport) 
+				{ 
+					$('transactions').update(transport.responseText);
+					$$('tr.transaction').invoke('observe', 'click', transactionClick);
+				},
+				onFailure: function(transport)
+				{
+					alert(transport.responseText);
+				},
+				onComplete: function(transport) {
+					$('teditform').addClassName("hidden");
+				}
+			}); 
+			return false;
+		}
+		
+	  	function transactionClick(event)
+	  	{
+			var row = Event.element(event).parentNode;
+			var id = row.id;
+			var data = row.descendants();
+			var form = $('teditform');
+			form.removeClassName("hidden");
+			$('transaction_key').setValue(id);
+			$('transaction_date').setValue(data[0].textContent);
+			$('transaction_source').setValue(data[1].getAttribute('value'));
+			$('transaction_dest').setValue(data[2].getAttribute('value'));
+			$('transaction_ammount').setValue(data[3].textContent);
+			$('transaction_currency').setValue(data[4].getAttribute('value'));
+			$('transaction_text').setValue(data[5].textContent);
+			form.scrollTo();
+	  	}
+		
+	  	function transaction_NewClick(event)
+	  	{
+			var form = $('teditform');
+			form.removeClassName("hidden");
+			$('transaction_key').setValue("None");
+			//$('transaction_date').setValue("2009-01");
+			//$('transaction_source').setValue(data[1].getAttribute('value'));
+			//$('transaction_dest').setValue(data[2].getAttribute('value'));
+			$('transaction_ammount').setValue('0');
+			//$('transaction_currency').setValue('None');
+			$('transaction_text').setValue('New...');
+			//$('transaction_delete').addClassName("hidden");
+			form.scrollTo();
+	  	}
+		
+	  	// run some startup code
+		document.observe("dom:loaded", function ()
+		{  			
+			new Ajax.Request("/transactions", {   
+				method: 'post',   
+				parameters: { action: 'list', project: project_id },
+				onSuccess: function(transport) { 
+					$('transactions').update(transport.responseText);
+					$$('tr.transaction').invoke('observe', 'click', transactionClick);
+				}
+			} );
+			new Ajax.Request("/accounts", {   
+				method: 'post',   
+				parameters: { action: 'list', project: project_id },
+				onSuccess: function(transport) { 
+					$('transaction_source').update(transport.responseText); 
+					$('transaction_dest').update(transport.responseText); 
+				}
+			} );
+			new Ajax.Request("/currencies", {   
+				method: 'post',   
+				parameters: { action: 'list', project: project_id },
+				onSuccess: function(transport) { 
+					$('transaction_currency').update(transport.responseText); 
+				}
+			} );
+		});		
+	</script>
+{% endblock %}
+
+{% block body %}
+<form id="teditform" enctype="multipart/form-data" class="hidden" onsubmit="return false;">
+	<fieldset>
+		<legend>Transaction</legend>
+		<input id="transaction_key" type="text" class="hidden" readonly="true" size="1" name="KEY" VALUE=""/>
+		<input id="project" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{ project_key }}"/>
+		
+		<label for="transaction_date">Date</label>
+		<input id="transaction_date" type="text" readonly="true" name="TEXT" size="7" VALUE=""/>
+		<input type=button value="select" onclick="displayDatePicker('transaction_date', false, 'ymd', '-');">
+
+					
+		<label for="transaction_source">Credit</label>
+		<select id="transaction_source" name="SOURCE"><option>Not loaded</option></select>
+		
+		<label for="transaction_dest">Debit</label>
+		<select id="transaction_dest" name="DEST"><option>Not loaded</option></select>
+
+		<label for="transaction_ammount">Ammount</label>
+		<input id="transaction_ammount" type="text" name="TEXT" size="5" VALUE=""/>
+		
+		<label for="transaction_currency">Currency</label>
+		<select id="transaction_currency" name="CURRENCY"><option>Not loaded</option></select>
+						
+		<label for="transaction_text">For</label>
+		<input id="transaction_text" type="text" name="TEXT" size="10" VALUE=""/>
+		
+		<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_SubmitClick()">Update</button>
+		<button id="transaction_delete" type="submit" name="Action" value="Delete" onclick="transaction_DeleteClick()">Delete</button>
+	</fieldset>
+</form>
+
+<h1>Transactions</h1><button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_NewClick()">New...</button>
+<table>
+	<thead>
+		<tr>
+			<th>Date</th>
+			<th>Source</th>
+			<th>Dest</th>
+			<th>Ammount</th>
+			<th>Currency</th>
+			<th>Text</th>
+			<th>Last modified by</th>
+		</tr>
+	</thead>
+	<tbody id="transactions"></tbody>
+</table>  
+{% endblock %}

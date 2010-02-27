@@ -1,0 +1,27 @@
+﻿{% extends "project_base_en.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+	<h1>Access</h1> 
+	<ul>
+	{% for r in rights %}
+		<li value="{{ r.key }}">{{ r.user.nickname }} =&gt; {{ r.right }}</li>
+	{% endfor %}
+	</ul>
+	<h1>Invited</h1>
+	<ul>
+	{% for i in invitations %}
+		<li value="{{ i.key }}">{{ i.user.nickname }} =&gt; {{ i.right }}</li>
+	{% endfor %}
+		<li>
+			<form action="/access?project={{project_key}}" method="post" enctype="multipart/form-data">
+				email
+				<input type="text" name="email" size="12" value=""/>
+				<input type="hidden" name="right" size="2" value="255"/>
+				<input type="Submit" name="action" value="invite"/>
+			</form>
+		</li>
+	</ul>
+{% endblock %}
