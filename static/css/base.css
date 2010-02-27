@@ -68,6 +68,10 @@ tr.transaction:hover {
 	display:none;
 }
 
+tr.check {
+   background-color:yellow;
+}
+
 tr.results {
    font-weight: bold;
    background-color:silver;

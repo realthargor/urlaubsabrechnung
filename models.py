@@ -97,7 +97,7 @@ class Project(db.Model):
 		sums = dict()
 		for transaction in self.transaction_set:
 			res.write("""
-					<tr>
+					<tr class="%(class)s">
 						<td>%(date)s</td>
 						<td>%(text)s</td>
 						<td >%(amount).2f%(currency)s</td>
@@ -111,6 +111,7 @@ class Project(db.Model):
 							'currency': transaction.CurrencyName(),
 							'amountBase': transaction.AmountBase(),
 							'text': transaction.text,
+							'class': "check" if transaction.check else "",
 							'lastmodified': transaction.lastmod,
 							'modifiedby': transaction.user
 						})
@@ -181,6 +182,7 @@ class Transaction(db.Model):
 	text = db.StringProperty()  
 	date = db.DateTimeProperty(auto_now_add=True)
 	user = db.UserProperty(auto_current_user=True)
+	check = db.BooleanProperty()
 	lastmod = db.TimeProperty(auto_now=True)
 	
 	""" returns the amount of the transaction using in the project currency """
