@@ -1,6 +1,11 @@
 ﻿{% extends "project_base_en.html" %}
 
-{% block body %}
-	<h1>Summary</h1> 
-	{{ txt }}
+{% block body %}	
+	<h1>{{ project.name }}</h1>
+	<h2>Ergebnis</h2> 
+	{{ transactions }}
+	<h2>Gruppen</h2>
+	{{ groups }}
+	<h2>Währungen</h2>
+	{{ currencies }}
 {% endblock %}
