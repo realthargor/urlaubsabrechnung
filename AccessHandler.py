@@ -31,10 +31,11 @@ class AccessHandler(BaseRequestHandler):
 										subject="Invitation to Urlaubsabrechnung")
 			message.to = i.user.email()
 			message.body = "Hallo!\n\nDu bist eingeladen die Abrechnung fuer %(projectname)s anzusehen.\n\n" \
-			"Bitte melde dich unter\nhttp://urlaubsabrechnung.appspot.com/join?invitation=%(invitation)s&code=%(code)d"\
+			"Bitte melde dich unter\nhttp://urlaubsabrechnung.appspot.com/join?project=%(project)s&invitation=%(invitation)s&code=%(code)d"\
 			"\nmit einem google account an.!" % {
 													'projectname':  project.name,
 													'invitation':  i.key(),
+													'project': project.key(),
 													'code': i.code
 												}
 			message.send()
