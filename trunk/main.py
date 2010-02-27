@@ -12,7 +12,6 @@ from SummaryHandler import *
 from TransactionsHandler import *
 from CurrenciesHandler import *
 from AccountsHandler import *
-from ReportHandler import *
 from AccessHandler import *
 from JoinHandler import *
 											
@@ -25,7 +24,6 @@ application = webapp.WSGIApplication([
   ('/transactions'	, TransactionsHandler),
   ('/currencies'	, CurrenciesHandler),
   ('/accounts'		, AccountsHandler),
-  ('/report'		, ReportHandler),
   ('/access'		, AccessHandler),
   ('/join'			, JoinHandler),
  ], debug=True)

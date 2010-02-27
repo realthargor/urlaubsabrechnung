@@ -7,11 +7,10 @@
 {% block buttons %}
 <span class="item">
 	<input type="button" onclick="location.href='/'" value="Project list"/>
-	<input type="button" onclick="location.href='/summary?project={{ project_key }}'" value="Summary"/>
+	<input type="button" onclick="location.href='/summary?project={{ project_key }}'" value="Report"/>
 	<input type="button" onclick="location.href='/transactions?project={{ project_key }}'" value="Transactions"/>
 	<input type="button" onclick="location.href='/accounts?project={{ project_key }}'" value="Accounts"/>
 	<input type="button" onclick="location.href='/currencies?project={{ project_key }}'" value="Currencies"/>
-	<input type="button" onclick="location.href='/report?project={{ project_key }}'" value="Report"/>
 	<input type="button" onclick="location.href='/access?project={{ project_key }}'" value="Access"/>
 </span>
 {% endblock %}
