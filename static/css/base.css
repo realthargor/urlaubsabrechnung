@@ -67,3 +67,8 @@ tr.transaction:hover {
 	visibility:hidden;
 	display:none;
 }
+
+tr.results {
+   font-weight: bold;
+   background-color:silver;
+}

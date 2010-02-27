@@ -48,16 +48,14 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Currencies</h1> 
-	<p>Project currency is <b><span id="project_currency">{{ project.currency }}</span></b></p>
-	<ul>
+	<h2>Währungen</h2> 
 	{% for c in currencies %}
 		<li>
 			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="key" size="6" value="{{c.key}}"></input>
-				Name
+				1 {{ project.currency }} = 
 				<input type="text" name="divisor" size="6" value="{{c.divisor}}"></input>
-				<input type="text" name="name" size="6" value="{{c.name}}"></input> = 1 {{ project.currency }}
+				<input type="text" name="name" size="6" value="{{c.name}}"></input> 
 				<input type="Submit" name="action" value="update"/>
 				<input type="Submit" name="action" value="delete"/>
 			</form>
@@ -65,9 +63,9 @@
 	{% endfor %}
 		<li>
 			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
-				Name
+				1 {{ project.currency }} = 
 				<input type="text" name="divisor" size="6" value="1"></input>
-				<input type="text" name="name" size="6" value="new"></input> = 1 {{ project.currency }}
+				<input type="text" name="name" size="6" value="Währungsname"></input>
 				<input type="Submit" name="action" value="add"/>
 			</form>
 		</li>

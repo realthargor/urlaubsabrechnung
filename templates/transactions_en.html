@@ -35,6 +35,11 @@
 			return false;
 		}
 		
+		function transaction_CloseClick(event) {
+			$('teditform').addClassName("hidden");
+			return false;
+		}
+		
 		function transaction_DeleteClick(event)
 		{
 			new Ajax.Request("/transactions", {   
@@ -125,48 +130,51 @@
 {% block body %}
 <form id="teditform" enctype="multipart/form-data" class="hidden" onsubmit="return false;">
 	<fieldset>
-		<legend>Transaction</legend>
+		<legend>Transaktion</legend>
 		<input id="transaction_key" type="text" class="hidden" readonly="true" size="1" name="KEY" VALUE=""/>
 		<input id="project" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{ project_key }}"/>
 		
-		<label for="transaction_date">Date</label>
+		<label for="transaction_date">Datum</label>
 		<input id="transaction_date" type="text" readonly="true" name="TEXT" size="7" VALUE=""/>
-		<input type=button value="select" onclick="displayDatePicker('transaction_date', false, 'ymd', '-');">
+		<input type=button value="..." onclick="displayDatePicker('transaction_date', false, 'ymd', '-');">
 
 					
-		<label for="transaction_source">Credit</label>
+		<label for="transaction_source">Von</label>
 		<select id="transaction_source" name="SOURCE"><option>Not loaded</option></select>
 		
-		<label for="transaction_dest">Debit</label>
+		<label for="transaction_dest">An</label>
 		<select id="transaction_dest" name="DEST"><option>Not loaded</option></select>
 
-		<label for="transaction_ammount">Ammount</label>
+		<label for="transaction_ammount">Betrag</label>
 		<input id="transaction_ammount" type="text" name="TEXT" size="5" VALUE=""/>
 		
-		<label for="transaction_currency">Currency</label>
+		<label for="transaction_currency">Währung</label>
 		<select id="transaction_currency" name="CURRENCY"><option>Not loaded</option></select>
 						
-		<label for="transaction_text">For</label>
+		<label for="transaction_text">Für was</label>
 		<input id="transaction_text" type="text" name="TEXT" size="10" VALUE=""/>
 		
-		<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_SubmitClick()">Update</button>
-		<button id="transaction_delete" type="submit" name="Action" value="Delete" onclick="transaction_DeleteClick()">Delete</button>
+		<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_SubmitClick()">Aktualisieren</button>
+		<button id="transaction_cancel" type="submit" name="Action" value="Cancel" onclick="transaction_CloseClick()">Abbrechen</button>
+		<button id="transaction_delete" type="submit" name="Action" value="Delete" onclick="transaction_DeleteClick()">Löschen</button>
 	</fieldset>
 </form>
 
-<h1>Transactions</h1><button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_NewClick()">New...</button>
+<h1>Transaktionen</h1>
+<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_NewClick()">Neue Transaktion...</button>
 <table>
 	<thead>
 		<tr>
-			<th>Date</th>
-			<th>Source</th>
-			<th>Dest</th>
-			<th>Ammount</th>
-			<th>Currency</th>
-			<th>Text</th>
-			<th>Last modified by</th>
+			<th>Datum</th>
+			<th>Von</th>
+			<th>Nach</th>
+			<th>Betrag</th>
+			<th>Währung</th>
+			<th>Für Was</th>
+			<th>Letzte Änderung</th>
 		</tr>
 	</thead>
 	<tbody id="transactions"></tbody>
 </table>  
+<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_NewClick()">Neue Transaktion...</button>
 {% endblock %}
