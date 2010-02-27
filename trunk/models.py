@@ -37,17 +37,15 @@ class Project(db.Model):
 		res = StringIO.StringIO()
 		res.write('<ul>')
 		for account in filter(lambda a: not a.IsEndpoint(), self.person_set):
-			res.write('<li>')
-			res.write(account.name)
-			res.write(' (')
 			parts = account.enquire(100, balance=dict())
-			for partKey in parts:
-				member = Account.get(partKey)
-				res.write('%(part).2f%% %(name)s, ' % {
-					'name': member.name,
-					'part': parts[partKey]
-				})
-			res.write(')</li>')
+			res.write('<li>%(name)s &rArr; %(members)s</li>' % {
+				'name':account.name,
+				'members': ', '.join(
+					[
+						'%(part).2f%% %(name)s' % {'name': Account.get(partKey).name, 'part':parts[partKey] } 
+					for partKey in parts]
+					)
+			})
 		res.write('</ul>')
 		return res.getvalue()			
 
@@ -121,10 +119,10 @@ class Project(db.Model):
 			for ep in eps: 
 				res.write(self.formatTableValue(affected.get(ep.key(),0)))
 			res.write('</tr></thead><tbody>')
-		res.write('</tbody><tfoot><td colspan="6">Endergebnis (rot=Soll, schwarz=Haben)</td>')
+		res.write('</tbody><tfoot><tr class="results"><td colspan="6">Endergebnis (rot=Soll, schwarz=Haben)</td>')
 		for ep in eps: 
 			res.write(self.formatTableValue(sums.get(ep.key(), 0)))
-		res.write('</tfoot></table>')		
+		res.write('</tr></tfoot></table>')		
 		return res.getvalue()
   
 class Account(polymodel.PolyModel):

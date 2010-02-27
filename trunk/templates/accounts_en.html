@@ -187,37 +187,37 @@
 {% block body %}
 <form id="account_form">
   <fieldset>
-  	<legend>Accounts</legend>
+  	<legend>Konten</legend>
   	<table>
 		<tr>
 			<td>
-				Groups
+				Gruppenkonten
 			</td>
 			<td>
-				Members
+				Mitglieder
 			</td>
 			<td>
-				Persons
+				Personen
 			</td>
 		</tr>
 		<tr>
 			<td>
 				<input type="text" id="group_name" size="6"/>
-				<button name="action" type="button" id="group_add">new</button><br/>
-				<button name="action" type="button" id="group_rename">rename</button>
-				<button name="action" type="button" id="group_remove">delete</button>
+				<button name="action" type="button" id="group_add">Neue Gruppe erstellen</button><br/>
+				<button name="action" type="button" id="group_rename">Gruppe umbenennen</button>
+				<button name="action" type="button" id="group_remove">Gruppe löschen</button>
 			</td>
 			<td>
-				<label for="weight">Weight</label>
+				<label for="weight">Wichtung</label>
 				<input type="text" name="weight" id="member_weight" size="1" value="1" maxlength="4"/>
-				<button name="action" type="button" id="member_add">add</button><br/>
-				<button name="action" type="button" id="member_remove">remove</button>
+				<button name="action" type="button" id="member_add">Ausgewählte Personen zur Gruppe hinzufügen</button><br/>
+				<button name="action" type="button" id="member_remove">Ausgewählte Mitglieder entfernen</button>
 			</td>
 			<td>
 				<input type="text" id="person_name" size="6"/>
-				<button name="action" type="button" id="person_add">new</button><br/>
-				<button name="action" type="button" id="person_rename">rename</button>
-				<button name="action" type="button" id="person_remove">delete</button>
+				<button name="action" type="button" id="person_add">Neue Person hinzufügen</button><br/>
+				<button name="action" type="button" id="person_rename">Person umbenennen</button>
+				<button name="action" type="button" id="person_remove">Person löschen</button>
 			</td>		
 		</tr>
 		<tr>
@@ -228,6 +228,6 @@
   	</table>  
   </fieldset>
 </form>
-<p id="progress" style="display: none;">Updating memberships&#8230;</p>
+<p id="progress" style="display: none;">Aktualisierung&#8230;</p>
 <p id="result"></p>
 {% endblock %}
