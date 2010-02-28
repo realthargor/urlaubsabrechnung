@@ -30,7 +30,7 @@ class TransactionsHandler(BaseRequestHandler):
 					'source_key': t.source.key(),
 					'dest_key': t.dest.key(),
 					'currency_key': t.currency and t.currency.key(),
-				} for t in project.transaction_set],
+				} for t in sorted(project.transaction_set, cmp=lambda x,y: cmp(x.date, y.date))],				
 			'project': project,
 		})
 
@@ -55,6 +55,7 @@ class TransactionsHandler(BaseRequestHandler):
 			transaction.source = Account.get(self.request.get('source', transaction.source and transaction.source.key()))
 			transaction.dest = Account.get(self.request.get('dest', transaction.dest and transaction.dest.key()))
 			transaction.ammount = float(self.request.get('ammount', str(transaction.ammount)).replace(',','.'))
+			transaction.check = self.request.get('check', 'False')=='True'
 			# a None currency means we use the base currency!
 			c = self.request.get('currency', transaction.currency and transaction.currency.key())
 			if c=="None":

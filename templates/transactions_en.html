@@ -16,6 +16,7 @@
 					source: $F('transaction_source'),					
 					dest: $F('transaction_dest'),
 					ammount: $F('transaction_ammount'),
+					check: $F('transaction_check')!=null?"True":"False",
 					currency: $F('transaction_currency'),
 					text: $F('transaction_text')
 				},
@@ -72,6 +73,8 @@
 			var data = row.descendants();
 			var form = $('teditform');
 			form.removeClassName("hidden");
+			$('transaction_delete').removeClassName("hidden");
+			$('transaction_update').innerHTML = "Aktualisieren";
 			$('transaction_key').setValue(id);
 			$('transaction_date').setValue(data[0].textContent);
 			$('transaction_source').setValue(data[1].getAttribute('value'));
@@ -79,6 +82,7 @@
 			$('transaction_ammount').setValue(data[3].textContent);
 			$('transaction_currency').setValue(data[4].getAttribute('value'));
 			$('transaction_text').setValue(data[5].textContent);
+			$('transaction_check').setValue(data[5].getAttribute('check')=="True"?"Check":null);
 			form.scrollTo();
 	  	}
 		
@@ -87,13 +91,10 @@
 			var form = $('teditform');
 			form.removeClassName("hidden");
 			$('transaction_key').setValue("None");
-			//$('transaction_date').setValue("2009-01");
-			//$('transaction_source').setValue(data[1].getAttribute('value'));
-			//$('transaction_dest').setValue(data[2].getAttribute('value'));
 			$('transaction_ammount').setValue('0');
-			//$('transaction_currency').setValue('None');
 			$('transaction_text').setValue('New...');
-			//$('transaction_delete').addClassName("hidden");
+			$('transaction_delete').addClassName("hidden");
+			$('transaction_update').innerHTML = "Hinzufügen";
 			form.scrollTo();
 	  	}
 		
@@ -128,41 +129,49 @@
 {% endblock %}
 
 {% block body %}
-<form id="teditform" enctype="multipart/form-data" class="hidden" onsubmit="return false;">
+<form id="teditform" enctype="multipart/form-data" class="hidden transaction" onsubmit="return false;">
 	<fieldset>
 		<legend>Transaktion</legend>
 		<input id="transaction_key" type="text" class="hidden" readonly="true" size="1" name="KEY" VALUE=""/>
 		<input id="project" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{ project_key }}"/>
+		<br/>
 		
 		<label for="transaction_date">Datum</label>
-		<input id="transaction_date" type="text" readonly="true" name="TEXT" size="7" VALUE=""/>
+		<input id="transaction_date" type="text" readonly="true" name="TEXT" size="10" VALUE=""/>
 		<input type=button value="..." onclick="displayDatePicker('transaction_date', false, 'ymd', '-');">
+		<br/>
 
 					
 		<label for="transaction_source">Von</label>
-		<select id="transaction_source" name="SOURCE"><option>Not loaded</option></select>
+		<select id="transaction_source" class="formInputWidth" name="SOURCE"><option>Not loaded</option></select>
+		<br/>
 		
 		<label for="transaction_dest">An</label>
-		<select id="transaction_dest" name="DEST"><option>Not loaded</option></select>
+		<select id="transaction_dest" class="formInputWidth" name="DEST"><option>Not loaded</option></select>
+		<br/>
 
 		<label for="transaction_ammount">Betrag</label>
 		<input id="transaction_ammount" type="text" name="TEXT" size="5" VALUE=""/>
-		
-		<label for="transaction_currency">Währung</label>
 		<select id="transaction_currency" name="CURRENCY"><option>Not loaded</option></select>
+		<br/>
 						
 		<label for="transaction_text">Für was</label>
-		<input id="transaction_text" type="text" name="TEXT" size="10" VALUE=""/>
+		<input id="transaction_text" type="text" class="formInputWidth" name="TEXT" size="70" VALUE=""/>
+		<br/>
+
+		<label for="transaction_check">Prüfen!</label>
+		<input id="transaction_check" type="checkbox" name="CHECK" value="True" />
+		<br/>
 		
-		<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_SubmitClick()">Aktualisieren</button>
-		<button id="transaction_cancel" type="submit" name="Action" value="Cancel" onclick="transaction_CloseClick()">Abbrechen</button>
 		<button id="transaction_delete" type="submit" name="Action" value="Delete" onclick="transaction_DeleteClick()">Löschen</button>
+		<button id="transaction_cancel" type="submit" name="Action" value="Cancel" onclick="transaction_CloseClick()">Abbrechen</button>
+		<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_SubmitClick()">Aktualisieren</button>
 	</fieldset>
 </form>
 
 <h1>Transaktionen</h1>
 <button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_NewClick()">Neue Transaktion...</button>
-<table>
+<table class="smallFont">
 	<thead>
 		<tr>
 			<th>Datum</th>

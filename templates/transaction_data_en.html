@@ -1,11 +1,11 @@
 ﻿{% for t in transactions %}
-<tr id="{{ t.key }}" class="transaction">
+<tr id="{{ t.key }}" class="transaction {% if t.t.check %} check {% endif %}">
 	<td>{{ t.t.date|date:"Y-m-d" }}</td>
 	<td value="{{ t.source_key }}">{{ t.t.source.name }}</td>
 	<td value="{{ t.dest_key }}">{{ t.t.dest.name }}</td>
 	<td>{{ t.t.ammount }}</td>
 	<td value="{{ t.currency_key }}">{% if t.t.currency %} {{ t.t.currency.name }} {% else %} {{ project.currency }} {% endif %}</td>
-	<td>{{ t.t.text }}</td>
+	<td check="{{ t.t.check }}">{{ t.t.text }}</td>
 	<td><a href="mailto:{{ t.t.user }}">{{ t.t.user }}</a> on {{ t.t.lastmod }}</td>
 </tr>
 {% endfor %}

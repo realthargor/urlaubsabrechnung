@@ -55,11 +55,15 @@ class BaseRequestHandler(webapp.RequestHandler):
 	# throws an exception, if the rights are not sufficent
 	# returns a tuple with actual project and the  rights otherwise	
 	def getandcheckproject(self, required_rights):
-		project = Project.get(self.request.get('project',''))
-		if (not project):
-			raise Exception("Unknown project!")
-		# check rights of current user for this project, and deny access if not permitable
-		rights = ProjectRights.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=project).get()
-		if (not rights) or (rights.right<required_rights):
-			raise Exception("Access denied!")
-		return (project, rights.right)
+		try:
+			project = Project.get(self.request.get('project',''))
+			if (not project):
+				raise Exception("Unknown project!")
+			# check rights of current user for this project, and deny access if not permitable
+			rights = ProjectRights.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=project).get()
+			if (not rights) or (rights.right<required_rights):
+				raise Exception("Access denied!")
+			return (project, rights.right)
+		except BadKeyError:
+			self.response.clear()
+			self.redirect("/")
