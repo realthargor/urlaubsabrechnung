@@ -201,29 +201,29 @@
 			</td>
 		</tr>
 		<tr>
-			<td>
-				<input type="text" id="group_name" size="6"/>
-				<button name="action" type="button" id="group_add">Neue Gruppe erstellen</button><br/>
-				<button name="action" type="button" id="group_rename">Gruppe umbenennen</button>
-				<button name="action" type="button" id="group_remove">Gruppe löschen</button>
-			</td>
-			<td>
-				<label for="weight">Wichtung</label>
-				<input type="text" name="weight" id="member_weight" size="1" value="1" maxlength="4"/>
-				<button name="action" type="button" id="member_add">Ausgewählte Personen zur Gruppe hinzufügen</button><br/>
-				<button name="action" type="button" id="member_remove">Ausgewählte Mitglieder entfernen</button>
-			</td>
-			<td>
-				<input type="text" id="person_name" size="6"/>
-				<button name="action" type="button" id="person_add">Neue Person hinzufügen</button><br/>
-				<button name="action" type="button" id="person_rename">Person umbenennen</button>
-				<button name="action" type="button" id="person_remove">Person löschen</button>
-			</td>		
+			<td><input type="text" id="group_name" class="formInputWidth" size="30"/></td>
+			<td><input type="text" class="formInputWidth" name="weight" id="member_weight" size="1" value="1" maxlength="4"/></td>
+			<td><input type="text" id="person_name" class="formInputWidth" size="6"/></td>
 		</tr>
 		<tr>
-			<td><select class="fixedSizeSelect" id="group_list"  size="10"                    ></select></td>
-			<td><select class="fixedSizeSelect" id="member_list" size="10" multiple="multiple"></select></td>
-			<td><select class="fixedSizeSelect" id="person_list" size="10" multiple="multiple"></select></td>
+			<td><button name="action" class="buttonWidth" type="button" id="group_add">Neue Gruppe erstellen</button></td>
+			<td><button name="action" class="buttonWidth" type="button" id="member_add">Ausgewählte Personen zur Gruppe hinzufügen</button></td>
+			<td><button name="action" class="buttonWidth" type="button" id="person_add">Neue Person hinzufügen</button><br/></td>
+		</tr>
+		<tr>
+			<td><button name="action" class="buttonWidth" type="button" id="group_rename">Gruppe umbenennen</button></td>
+			<td/>
+			<td><button name="action" class="buttonWidth" type="button" id="person_rename">Person umbenennen</button></td>
+		</tr>
+		<tr>
+			<td><button name="action" class="buttonWidth" type="button" id="group_remove">Gruppe löschen</button></td>
+			<td><button name="action" class="buttonWidth" type="button" id="member_remove">Ausgewählte Mitglieder entfernen</button></td>
+			<td><button name="action" class="buttonWidth" type="button" id="person_remove">Person löschen</button></td>
+		</tr>
+		<tr>
+			<td><select class="formInputWidth"  id="group_list"  size="10"                    ></select></td>
+			<td><select class="formInputWidth"  id="member_list" size="10" multiple="multiple"></select></td>
+			<td><select class="formInputWidth"  id="person_list" size="10" multiple="multiple"></select></td>
 		</tr>
   	</table>  
   </fieldset>

@@ -75,7 +75,7 @@ class Project(db.Model):
 		res = StringIO.StringIO()
 		eps = self.Endpoints()
 		res.write("""
-		<table border="1" cellspacing="1" cellpadding="0">
+		<table border="1" cellspacing="1" cellpadding="0" class="smallFont"	>
 			<thead>
 				<tr>
 					<th colspan="6"/>
@@ -95,7 +95,7 @@ class Project(db.Model):
 			res.write('<th>%(name)s</th>' % { 'name': ep.name, 'baseCurrency': self.currency } )
 		res.write('</tr></thead><tbody>')				
 		sums = dict()
-		for transaction in self.transaction_set:
+		for transaction in sorted(self.transaction_set, cmp=lambda x,y: cmp(x.date, y.date)):
 			res.write("""
 					<tr class="%(class)s">
 						<td>%(date)s</td>
@@ -182,7 +182,7 @@ class Transaction(db.Model):
 	text = db.StringProperty()  
 	date = db.DateTimeProperty(auto_now_add=True)
 	user = db.UserProperty(auto_current_user=True)
-	check = db.BooleanProperty()
+	check = db.BooleanProperty(default=False)
 	lastmod = db.TimeProperty(auto_now=True)
 	
 	""" returns the amount of the transaction using in the project currency """

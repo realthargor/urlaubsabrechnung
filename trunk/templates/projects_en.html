@@ -45,12 +45,19 @@
 	</script>
 {% endblock %}
 
+{% block buttons %}
+<span class="item">
+	<input type="button" onclick="location.href='/'" value="Projektliste"/>
+</span>
+{% endblock %}
+
 {% block body %}
 	<h1>Meine Projekte</h1>
 	<ul>
 	{% for project in projects %}
-		<li>
-			<a href="/summary?project={{ project.id }}">{{ project.name }}</a>&nbsp;
+		<li>{{ project.name }}
+			<a href="/summary?project={{ project.id }}">[Report]</a>&nbsp;
+			<a href="/transactions?project={{ project.id }}">[Transaktionen]</a>&nbsp;
 			<button id="project_add" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.id }}')">Projekt aus meiner Liste entfernen</button>
 		</li>
 	{% endfor %}	
@@ -60,11 +67,14 @@
 			<legend>Neues Projekt anlegen...</legend>
 			<label for="project_name">Name</label>
 			<input id="project_name" type="text" name="TEXT" size="20" VALUE=""/>
+			<br/>
 						
 			<label for="project_currency">Grundwährung</label>
 			<input id="project_currency" type="text" name="TEXT" size="5" VALUE="€"/>
+			<br/>
 						
-			<button id="project_add" type="submit" name="Action" value="Add" onclick="project_AddClick()">hinzufügen</button>
+			<label for="project_add">Projekt</label>
+			<button id="project_add" type="submit" name="Action" value="Add" onclick="project_AddClick()">Erstellen...</button>
 		</fieldset>
 	</form>
 {% endblock %}

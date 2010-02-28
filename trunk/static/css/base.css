@@ -60,6 +60,10 @@ li {
   margin-bottom: 0.25em;
 }
 
+table.smallFont {
+  font-size: 90%;
+}
+
 tr.transaction:hover {
 	background-color:silver;
 }
@@ -75,4 +79,87 @@ tr.check {
 tr.results {
    font-weight: bold;
    background-color:silver;
+}
+
+form.transaction {
+	position:fixed; 
+	top:5%; 
+	left:5%; 
+	width:90%; 
+	height:90%; 
+	background-color:#eeeeee; 
+	z-index:1000;
+}
+
+form {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */
+  font:100% verdana,arial,sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+fieldset {
+    color: #666;
+    background-color: #efefef;
+    border: solid 1px #d3d3d3;
+    }
+
+legend {
+/*	
+	font-size: 2em; 
+    font-weight: bold;
+    font-variant: small-caps;
+*/
+    color: #666;
+    background-color: #d3d3d3;
+    padding: 2px 6px;
+    margin-bottom: 8px;
+}
+
+label  {
+    font-weight: bold;
+    line-height: normal;
+    text-align: right;
+    margin-right: 10px;
+    position: relative;
+    display: block;
+    float: left;
+    width: 125px;
+}
+
+label.fieldLabel  {
+    display: inline;
+    float: none;
+}
+
+select.formInputWidth {
+	width: 300px;
+}
+
+select.formInputWidth option { 
+	width:290px; 
+}
+
+input.formInputWidth {
+	width: 300px;
+}
+
+button.buttonWidth {
+	width: 300px;
+}
+
+input.formInputButton  {
+    font-size: 1.2em;
+    vertical-align: middle;
+    font-weight: bolder;
+    text-align: center;
+    color: #300;
+    background: #f99 url(bg_button.png) repeat-x;
+    padding: 1px;
+    border: solid 1px #f66;
+    float: right; 
+    cursor: pointer;
+}
+	
+form br {
+	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
 }

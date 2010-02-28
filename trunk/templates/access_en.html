@@ -8,13 +8,14 @@
 	{% endfor %}
 	</ul>
 	
-	<h2>Uneingelöste Einladungen</h2>
-	<ul>
-	{% for i in invitations %}
-		<li value="{{ i.key }}">{{ i.user.nickname }} =&gt; {{ i.right }}</li>
-	{% endfor %}
-	</ul>
-	
+	{% if  invitations %}
+		<h2>Uneingelöste Einladungen</h2>
+		<ul>
+		{% for i in invitations %}
+			<li value="{{ i.key }}">{{ i.user.nickname }} &rArr; {{ i.right }} &nbsp; <a href="/join?project={{i.project.key}}">/join?project={{i.project.key}}</a></li>
+		{% endfor %}
+		</ul>
+	{% endif %}
 	<h2>Einladungen versenden</h2>
 	<form action="/access?project={{project_key}}" method="post" enctype="multipart/form-data">
 		Email adresse
