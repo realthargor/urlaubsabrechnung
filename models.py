@@ -22,7 +22,15 @@ class Project(db.Model):
 	""" returns a list of endpoint accounts """
 	def Endpoints(self):
 		return filter(lambda a: a.IsEndpoint(), self.person_set)
-	
+		
+	""" checks wether the given name is a valid new name for a a new account or a given existing account """
+	def CheckNewAccountName(self, name, account=None):
+		if len(name)<1:
+			raise Exception("account name must be at least on character long")
+		for a in self.person_set:
+			if a.name==name and (account==None or a.key()!=account.key()):
+				raise Exception("duplicate name")
+				
 	""" Helper to format a single value """
 	def formatTableValue(self, value):
 		if value<0:
@@ -130,7 +138,7 @@ class Account(polymodel.PolyModel):
 	name = db.StringProperty(required=True)
 	def IsEndpoint(self):
 		return isinstance(self, Person) or sum([abs(member.weight) for member in self.member_set])==0	
-	
+		
 	""" return the sum of weights for the given group """
 	def SumOfMemberWeigths(self):
 		return sum([abs(member.weight) for member in self.member_set]) if isinstance(self, Group) else 0
@@ -153,15 +161,46 @@ class Account(polymodel.PolyModel):
 			rweight-=abs(member.weight)
 			val = round(amount*abs(member.weight)/sweight, 2) if rweight>0 else ramount
 			ramount-=val
-			balance[member.person.key()]=balance.get(member.person.key(),0)+sign*val;
+			balance[member.person.key()]=balance.get(member.person.key(),0)+sign*val
 		# return dictionary again
 		return balance
+		
+	""" returns the number of transactions affected by deleting this Account """
+	def ByDeleteAffectedTransactions(self):
+		return len(self.accountmodel_reference_source_set)+len(self.accountmodel_reference_dest_set)
+		
+	""" overwrites polymodel.PolyModel.delete() and also deletes all references """
+	def delete(self):
+		# delete transactions asociated with this person as source
+		for t in self.accountmodel_reference_source_set:
+			t.delete()
+		# delete transactions asociated with this person as dest
+		for t in self.accountmodel_reference_dest_set: 
+			t.delete()		
+		# call base method (which actually deletes this instance from the data store)
+		polymodel.PolyModel.delete(self)
 
 class Person(Account):
-  project = db.ReferenceProperty(Project)
+	project = db.ReferenceProperty(Project)
+	""" overwrites polymodel.PolyModel.delete() and also deletes all references """
+	def delete(self):
+		# delete all membership definitions
+		for membership in self.member_set:
+			membership.delete()
+		# call base method (which actually deletes this instance from the data store)
+		Account.delete(self)
   
 class Group(Account):
-  project = db.ReferenceProperty(Project)
+	project = db.ReferenceProperty(Project)
+	
+	""" overwrites polymodel.PolyModel.delete() and also deletes all references """
+	def delete(self):
+		# delete all membership definitions
+		for membership in self.member_set:
+			membership.delete()
+		# call base method (which actually deletes this instance from the data store)
+		Account.delete(self)
+	
   
 class Member(db.Model):
   group = db.ReferenceProperty(Group)
