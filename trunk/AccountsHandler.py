@@ -82,40 +82,35 @@ class AccountsHandler(BaseRequestHandler):
 				
 		elif action=='group_add':
 			# add a new group
-			group = Group(name=self.request.get('name'), project=project)
+			newname = self.request.get('name')
+			project.CheckNewAccountName(newname)
+			group = Group(name=newname, project=project)
 			group.put()
 			# list new remaining groups
 			self.listGroups(project, Group, group)
 			
 		elif action=='person_add':
 			# add a new person
-			person = Person(name=self.request.get('name'), project=project)
+			newname = self.request.get('name')
+			project.CheckNewAccountName(newname)
+			person = Person(name=newname, project=project)
 			person.put()
 			# list the persons
 			self.listGroups(project, Person, person)
 			
 		elif action=='person_remove':
-			# remove a group
+			# remove a list of persons
 			for person_key in json.loads(self.request.get('person_list')):
-				person = Person.get(person_key)
-				# delete transactions asociated with this person as source
-				for t in person.accountmodel_reference_source_set:
-					t.delete()
-				# delete transactions asociated with this person as dest
-				for t in person.accountmodel_reference_dest_set: 
-					t.delete()
-				# delete all membership definitions
-				for m in person.member_set:
-					m.delete()
-				# finally delete the person self
-				person.delete()
+				Account.get(person_key).delete()
 			# list persons
 			self.listGroups(project, Person, None)
 		
 		elif action=='person_rename':
 			# rename an account
 			account = Account.get(self.request.get('account'));
-			account.name=self.request.get('name', account.name)
+			newname = self.request.get('name', account.name)
+			project.CheckNewAccountName(newname, account)
+			account.name = newname
 			account.put()
 			# list accounts
 			self.listGroups(project, Person, account)
@@ -123,25 +118,16 @@ class AccountsHandler(BaseRequestHandler):
 		elif action=='group_rename':
 			# rename an account
 			account = Account.get(self.request.get('account'));
-			account.name=self.request.get('name', account.name)
+			newname = self.request.get('name', account.name)
+			project.CheckNewAccountName(newname, account)
+			account.name = newname
 			account.put()
 			# list accounts
 			self.listGroups(project, Group, account)		
 			
 		elif action=='group_remove':
 			# remove a group
-			group = Group.get(self.request.get('group'));
-			# delete transactions asociated with this group as source
-			for t in group.accountmodel_reference_source_set: 
-				t.delete()
-			# delete transactions asociated with this group as dest
-			for t in group.accountmodel_reference_dest_set: 
-				t.delete()
-			# delete all membership definitions
-			for m in group.member_set:
-				m.delete()
-			# finally delete the group self
-			group.delete()			
+			Group.get(self.request.get('group')).delete();
 			# list remaining groups
 			self.listGroups(project, Group, None)
 			
