@@ -86,21 +86,22 @@ class Project(db.Model):
 		<table border="1" cellspacing="1" cellpadding="0" class="smallFont"	>
 			<thead>
 				<tr>
-					<th colspan="6"/>
+					<th colspan="5"/>
 					<th colspan="%(endpoints)d">Belastung</th>
+					<th colspan="1"/>
 				</tr>
 				<tr>
 					<th>Datum</th>
 					<th>Was</th>
 					<th>Wert</th>
 					<th>Von</th>
-					<th>An</th>
-					<th>Letzte Aenderung</th>""" % { 
+					<th>An</th>""" % { 
 						'baseCurrency': self.currency,
 						'endpoints': len(eps)
 					} )				
 		for ep in eps: 
 			res.write('<th>%(name)s</th>' % { 'name': ep.name, 'baseCurrency': self.currency } )
+		res.write('<th>Letzte Aenderung</th>')
 		res.write('</tr></thead><tbody>')				
 		sums = dict()
 		for transaction in sorted(self.transaction_set, cmp=lambda x,y: cmp(x.date, y.date)):
@@ -110,8 +111,7 @@ class Project(db.Model):
 						<td>%(text)s</td>
 						<td >%(amount).2f%(currency)s</td>
 						<td>%(source)s</td>
-						<td>%(dest)s</td>
-						<td>%(lastmodified)s by %(modifiedby)s</td>""" % { 
+						<td>%(dest)s</td>""" % { 
 							'date': transaction.date.strftime("%d.%m.%Y"),
 							'source': transaction.source.name,
 							'dest': transaction.dest.name,
@@ -119,19 +119,21 @@ class Project(db.Model):
 							'currency': transaction.CurrencyName(),
 							'amountBase': transaction.AmountBase(),
 							'text': transaction.text,
-							'class': "check" if transaction.check else "",
-							'lastmodified': transaction.lastmod,
-							'modifiedby': transaction.user
+							'class': "check" if transaction.check else ""							
 						})
 			affected = transaction.UpdateSums(balance=dict())
 			transaction.UpdateSums(balance=sums)
 			for ep in eps: 
 				res.write(self.formatTableValue(affected.get(ep.key(),0)))
-			res.write('</tr></thead><tbody>')
-		res.write('</tbody><tfoot><tr class="results"><td colspan="6">Endergebnis (rot=Soll, schwarz=Haben)</td>')
+			res.write('<td>%(lastmodified)s by %(modifiedby)s</td>' % {
+					'lastmodified': transaction.lastmod,
+					'modifiedby': transaction.user
+				})
+			res.write('</tr>')
+		res.write('</tbody><tfoot><tr class="results"><td colspan="5">Endergebnis (rot=Soll, schwarz=Haben)</td>')
 		for ep in eps: 
 			res.write(self.formatTableValue(sums.get(ep.key(), 0)))
-		res.write('</tr></tfoot></table>')		
+		res.write('<td/></tr></tfoot></table>')		
 		return res.getvalue()
   
 class Account(polymodel.PolyModel):

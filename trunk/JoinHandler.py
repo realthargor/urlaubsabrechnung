@@ -29,7 +29,7 @@ class JoinHandler(webapp.RequestHandler):
 				self.redirect("/")
 				return
 			# only allow privilige increase, when the project and the code matches the stored Invitation instance
-			if int(self.request.get('code', 0))==i.code and self.request.get('project', '')==i.project.key():
+			if int(self.request.get('code', 0))==i.code and str(self.request.get('project', ''))==str(i.project.key()):
 				# check for existiting access to project
 				rights = ProjectRights.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=i.project).get()
 				# edit rights
@@ -43,10 +43,11 @@ class JoinHandler(webapp.RequestHandler):
 				i.delete()
 			else:
 				# invalid invitation
-				raise Exception("Invalid invitation")
+				raise Exception("Invalid invitation %(p1)s!=%(p2)s" % {'p1': self.request.get('project', ''), 'p2':i.project.key() } )
 			# redirect to project summary, even if we can not increase priveliges
 			self.redirect("/summary?project=%(project)s" % { 'project': i.project.key() } )
 		except BadKeyError:
+			# 
 			self.redirect("/summary?project=%(project)s" % { 'project': self.request.get('project', 'invalid')} )
 			return 
  

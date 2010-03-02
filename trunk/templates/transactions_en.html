@@ -72,12 +72,12 @@
 			$('transaction_delete').removeClassName("hidden");
 			$('transaction_update').innerHTML = "Aktualisieren";
 			$('transaction_key').setValue(id);
-			$('transaction_date').setValue(data[0].textContent);
+			$('transaction_date').setValue(data[0].innerHTML);
 			$('transaction_source').setValue(data[1].getAttribute('value'));
 			$('transaction_dest').setValue(data[2].getAttribute('value'));
-			$('transaction_ammount').setValue(data[3].textContent);
+			$('transaction_ammount').setValue(data[3].innerHTML);
 			$('transaction_currency').setValue(data[4].getAttribute('value'));
-			$('transaction_text').setValue(data[5].textContent);
+			$('transaction_text').setValue(data[5].innerHTML);
 			$('transaction_check').setValue(data[5].getAttribute('check')=="True"?"Check":null);
 			form.scrollTo();
 	  	}
