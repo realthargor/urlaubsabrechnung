@@ -23,8 +23,8 @@ from google.appengine.api import mail
 class JoinHandler(webapp.RequestHandler):
 	@login_required
 	def	get(self):
-		try:
-			i = Invitation.get(self.request.get('invitation', '0'))
+		try:  
+			i = Invitation.get(self.request.get('invitation', ''))
 			if i is None:
 				self.redirect("/")
 				return
@@ -38,9 +38,12 @@ class JoinHandler(webapp.RequestHandler):
 				# possibly upgrade rights
 				if rights.right<i.right:
 					rights.right = i.right
-				rights.put()
+					rights.put()
 				# delete invitation
 				i.delete()
+			else:
+				# invalid invitation
+				raise Exception("Invalid invitation")
 			# redirect to project summary, even if we can not increase priveliges
 			self.redirect("/summary?project=%(project)s" % { 'project': i.project.key() } )
 		except BadKeyError:
