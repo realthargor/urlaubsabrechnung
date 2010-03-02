@@ -38,7 +38,7 @@ class JoinHandler(webapp.RequestHandler):
 				# possibly upgrade rights
 				if rights.right<i.right:
 					rights.right = i.right
-					rights.put()
+				rights.put()
 				# delete invitation
 				i.delete()
 			else:
