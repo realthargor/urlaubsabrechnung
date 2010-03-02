@@ -12,7 +12,8 @@
 		<h2>Uneingelöste Einladungen</h2>
 		<ul>
 		{% for i in invitations %}
-			<li value="{{ i.key }}">{{ i.user.nickname }} &rArr; {{ i.right }} &nbsp; <a href="/join?project={{i.project.key}}">/join?project={{i.project.key}}</a></li>
+			<li value="{{ i.key }}">{{ i.user.nickname }} &rArr; {{ i.right }} &nbsp;
+			<!-- <a href="http://urlaubsabrechnung.appspot.com/join?project={{i.project}}&invitation={{i.invitation}}&code={{i.code}}">http://urlaubsabrechnung.appspot.com/join?project={{i.project}}&invitation={{i.invitation}}&code={{i.code}}</a></li>  -->
 		{% endfor %}
 		</ul>
 	{% endif %}

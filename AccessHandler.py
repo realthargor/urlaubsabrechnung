@@ -62,7 +62,9 @@ class AccessHandler(BaseRequestHandler):
 					'user': invitation.user,
 					'right': invitation.right,
 					'created': invitation.created,
-					'key': invitation.key(),
+					'invitation': invitation.key(),
+					'code': invitation.code,
+					'project': invitation.project.key(),
 				} for invitation in project.invitation_set
 			]
 		})

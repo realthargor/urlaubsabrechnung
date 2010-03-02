@@ -30,7 +30,7 @@ class BaseRequestHandler(webapp.RequestHandler):
 		  'request': self.request,
 		  'user': users.GetCurrentUser(),
 		  'login_url': users.CreateLoginURL(self.request.uri),
-		  'logout_url': users.CreateLogoutURL(self.request.uri),
+		  'logout_url': users.CreateLogoutURL('/'),
 		  'application_name': 'Urlaubsabrechnung',
 		}
 		values.update(template_values)

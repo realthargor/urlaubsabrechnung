@@ -67,6 +67,10 @@ table.smallFont {
 tr.transaction:hover {
 	background-color:silver;
 }
+tr.transaction{
+	hover:expression(this.onmouseover=new Function("this.style.background='silver';"),this.onmouseout=new Function("this.style.background='#ffffff';"));
+}
+
 .hidden {
 	visibility:hidden;
 	display:none;
