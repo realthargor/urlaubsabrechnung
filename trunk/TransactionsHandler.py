@@ -21,34 +21,27 @@ from django.utils import simplejson as json
 from google.appengine.api import mail
 						
 class TransactionsHandler(BaseRequestHandler):
-	def sendTransactionList(self, project, right):
-		self.generate('transaction_data', {
-			'transactions':  [
-				{
-					't':t,
-					'key':t.key(),
-					'source_key': t.source.key(),
-					'dest_key': t.dest.key(),
-					'currency_key': t.currency and t.currency.key(),
-				} for t in sorted(project.transaction_set, cmp=lambda x,y: cmp(x.date, y.date))],				
-			'project': project,
+	def sendTransactionList(self):
+		self.generate('transaction_data', 
+		{
+			'transactions': sorted(self.project.transaction_set, cmp=lambda x,y: cmp(x.date, y.date))
 		})
 
 	# this handler handles all transaction transfer requests
 	def	post(self):
-		(project, right)=self.getandcheckproject(1)
+		self.updateproject()
 		action = self.request.get('action','list')
 		if action=='list':
-			self.sendTransactionList(project, right)		
+			self.sendTransactionList()		
 		elif action=='update':
 			# add a new or update a transaction
 			tkey=self.request.get('transaction','None')
 			if tkey=='None':
 				transaction = Transaction()
-				transaction.project = project
+				transaction.project = self.project
 			else:
 				transaction = Transaction.get(tkey)
-				if transaction.project.key()!=project.key():
+				if transaction.project.key()!=self.project.key():
 					raise Exception("Project/Transaction mismatch")
 			# update / set fields
 			transaction.date = datetime.strptime(self.request.get('date', transaction.date.isoformat()), "%Y-%m-%d")
@@ -56,13 +49,10 @@ class TransactionsHandler(BaseRequestHandler):
 			transaction.dest = Account.get(self.request.get('dest', transaction.dest and transaction.dest.key()))
 			transaction.ammount = float(self.request.get('ammount', str(transaction.ammount)).replace(',','.'))
 			transaction.check = self.request.get('check', 'False')=='True'
+			transaction.text = self.request.get('text', transaction.text)
 			# a None currency means we use the base currency!
 			c = self.request.get('currency', transaction.currency and transaction.currency.key())
-			if c=="None":
-				transaction.currency = None
-			else:
-				transaction.currency = Currency.get(c)
-			transaction.text = self.request.get('text', transaction.text)
+			transaction.currency = Currency.get(c) if c!="None" else None
 			# exchange source and dest, if the ammount is negative
 			if transaction.ammount<0:
 				tmp_src = transaction.source
@@ -72,22 +62,20 @@ class TransactionsHandler(BaseRequestHandler):
 			# put back into datastore
 			transaction.put()
 			# retransmit all transactions
-			self.sendTransactionList(project, right)
+			self.sendTransactionList()
 		elif action=='delete':
 			# add a new or update a transaction
 			transaction = Transaction.get(self.request.get('transaction','None'))
-			if transaction.project.key()!=project.key():
+			if transaction.project.key()!=self.project.key():
 				raise Exception("Project/Transaction mismatch")
 			transaction.delete()
 			# retransmit all transactions
-			self.sendTransactionList(project, right)			
+			self.sendTransactionList()			
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 	
 	# This handler shows the main transactions page
 	def	get(self):
-		(project, right)=self.getandcheckproject(1)
-		self.generate('transactions', {
-			'project': project,
-			'project_key': project.key(),
-		})
+		self.updateproject()
+		self.generate('transactions')
+		

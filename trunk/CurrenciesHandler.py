@@ -22,14 +22,18 @@ from google.appengine.api import mail
 								
 class CurrenciesHandler(BaseRequestHandler):
 	def	post(self):
-		(project, right)=self.getandcheckproject(1)
+		self.updateproject()
 		action = self.request.get('action','list')
 		if action=='list':
 			# add base currency of project
-			self.response.out.write('<option value="%(value)s">%(name)s</option>' % {'value':None, 'name':project.currency})
+			self.response.out.write('<option value="%(value)s">%(name)s</option>' % 
+				{'value':None, 'name':self.project.currency})
 			# create a list of options against all accounts
-			for a in project.currency_set:
-				self.response.out.write('<option value="%(value)s">%(name)s</option>' % {'name':a.name, 'value':a.key()})
+			for a in self.project.currency_set:
+				self.response.out.write('<option value="%(value)s">%(name)s</option>' % {
+					'name':a.name, 
+					'value':a.key()
+				})
 		
 		elif action=='add':
 			# add a new currency
@@ -37,7 +41,7 @@ class CurrenciesHandler(BaseRequestHandler):
 			if divisor<0.01: raise Exception("Divisor must be greater or equal to 0.01")
 			factor=float(self.request.get('factor', '1'))
 			if factor<0.01: raise Exception("Factor must be greater or equal to 0.01")
-			Currency(project=project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
+			Currency(project=self.project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
 			# generate std output
 			self.get()
 
@@ -68,15 +72,5 @@ class CurrenciesHandler(BaseRequestHandler):
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 		
 	def	get(self):
-		(project, right)=self.getandcheckproject(1)
-		self.generate('currencies', {
-			'project': project,
-			'project_key': project.key(),
-			'currencies': [
-				{
-					'name': currency.name,
-					'divisor': currency.divisor,
-					'factor': currency.factor,
-					'key': currency.key(),
-				} for currency in project.currency_set]
-		})
+		self.updateproject()
+		self.generate('currencies', {'currencies': self.project.currency_set })

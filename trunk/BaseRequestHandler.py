@@ -26,6 +26,8 @@ class BaseRequestHandler(webapp.RequestHandler):
 	in the 'request' variable.
 	"""
 	def generate(self, template_name, template_values={}):
+		if 'project' not in self.__dict__:
+			self.project = None
 		values = {
 		  'request': self.request,
 		  'user': users.GetCurrentUser(),
