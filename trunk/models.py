@@ -17,8 +17,71 @@ from google.appengine.ext.webapp.util import login_required
 
 class Project(db.Model):
 	name = db.StringProperty()
-	currency = db.StringProperty()  
+	currency = db.StringProperty()
 	
+	""" constructs a new project from a given key (the rights are added using the given user rights) """
+	@staticmethod
+	def get(key):
+		project = db.Model.get(key)
+		if not isinstance(project, Project):
+			raise BadKeyError("Not a project key!")
+		project.rights = 0x7FFFFFFF if users.is_current_user_admin() else ProjectRights.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=project).get().right
+		return project			
+	
+	""" returns all list of all projects the user actually has rights for """
+	@staticmethod
+	def all():
+		projects=()
+		for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user()):
+			right.project.rights =  right.right			
+			projects.append(right.project)
+		return projects				
+		
+	def RightReport(self):
+		return self.rights&1
+		
+	def RightTransaction(self):
+		return self.rights & (2|4|8)
+		
+	def RightReportView(self):
+		return self.rights & 1
+	
+	def RightTransactionNew(self):
+		return self.rights & 2
+
+	def RightTransactionUpdate(self):
+		return self.rights & 4
+
+	def RightTransactionDelete(self):
+		return self.rights & 8
+		
+	def RightAccountAdd(self):
+		return self.rights & 16
+
+	def RightAccountRemove(self):
+		return self.rights & 32
+
+	def RightMembershipUpdate(self):
+		return self.rights & 64
+
+	def RightCurrencyAdd(self):
+		return self.rights & 128
+		
+	def RightCurrencyUpdate(self):
+		return self.rights & 256
+
+	def RightCurrencyDelete(self):
+		return self.rights & 512
+
+	def RightAccessAdd(self):
+		return self.rights & 1024
+
+	def RightAccessDelete(self):
+		return self.rights & 2048
+
+	def RightAccessUpdate(self):
+		return self.rights & 4096
+		
 	""" returns a list of endpoint accounts """
 	def Endpoints(self):
 		return filter(lambda a: a.IsEndpoint(), self.person_set)
@@ -61,17 +124,19 @@ class Project(db.Model):
 	def CurrencyDefList(self):
 		res = StringIO.StringIO()
 		res.write('<ul>')
-		for currency in self.currency_set:
-			if currency.divisor>0:				
-				res.write('<li>1 %(base)s = %(divisor)f %(name)s</li>' % {
-					'name': currency.name,
+		for currency in self.currency_set:			
+			if currency.divisor==1 :
+				res.write('<li>%(divisor)f %(name)s = %(factor)f %(base)s</li>' % {
+					'name': currency.name,	
+					'factor': currency.factor,
 					'divisor': currency.divisor,
 					'base': self.currency
-				})
-			elif currency.divisor<0:
-				res.write('<li>1 %(name)s = %(factor)f %(base)</li>' % {
-					'name': currency.name,
-					'factor': 1/currency.divisor,
+				})				
+			else:
+				res.write('<li>%(factor)f %(base)s = %(divisor)f %(name)s</li>' % {
+					'name': currency.name,	
+					'factor': currency.factor,
+					'divisor': currency.divisor,
 					'base': self.currency
 				})
 		res.write('</ul>')
@@ -212,7 +277,8 @@ class Member(db.Model):
 class Currency(db.Model):
   project = db.ReferenceProperty(Project)
   name = db.StringProperty()
-  divisor = db.FloatProperty()
+  factor = db.FloatProperty(default=1.0)
+  divisor = db.FloatProperty(default=1.0)
    
 class Transaction(db.Model):
 	project = db.ReferenceProperty(Project)
@@ -228,7 +294,7 @@ class Transaction(db.Model):
 	
 	""" returns the amount of the transaction using in the project currency """
 	def AmountBase(self):
-		return self.ammount/self.currency.divisor if self.currency else self.ammount
+		return self.ammount*self.currency.factor/self.currency.divisor if self.currency else self.ammount
 	
 	""" returns the currency text """
 	def CurrencyName(self):

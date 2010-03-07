@@ -2,48 +2,6 @@
 
 {% block head %}
 	<script type="text/javascript">
-		project_id = "{{ project_key }}";
-		function deleteClick(key)
-		{
-			new Ajax.Request("/currencies", {   
-				method: 'post',
-				parameters: {
-					action: 'delete', 
-					project: project_id,
-					key: 
-				},
-				onSuccess: function(transport) 
-				{ 
-					location.href=transport.responseText;
-				},
-				onFailure: function(transport)
-				{
-					alert(transport.responseText);
-				}
-			}); 
-			return false;
-		}
-		
-		function project_AddClick(event)
-		{
-			new Ajax.Request("/", {   
-				method: 'post',
-				parameters: {
-					action: 'add', 
-					name: $F('project_name'),
-					currency: $F('project_currency'),					
-				},
-				onSuccess: function(transport) 
-				{ 
-					location.href=transport.responseText;
-				},
-				onFailure: function(transport)
-				{
-					alert(transport.responseText);
-				}
-			}); 
-			return false;
-		}
 	</script>
 {% endblock %}
 
@@ -53,7 +11,7 @@
 		<li>
 			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="key" size="6" value="{{c.key}}"></input>
-				1 {{ project.currency }} = 
+				<input type="text" name="factor" size="6" value="{%if c.factor %}{{c.factor}}{%else%}1{%endif%}"></input>{{ project.currency }} =
 				<input type="text" name="divisor" size="6" value="{{c.divisor}}"></input>
 				<input type="text" name="name" size="6" value="{{c.name}}"></input> 
 				<input type="Submit" name="action" value="update"/>
@@ -63,7 +21,7 @@
 	{% endfor %}
 		<li>
 			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
-				1 {{ project.currency }} = 
+				<input type="text" name="factor" size="6" value="1"></input>{{ project.currency }} =
 				<input type="text" name="divisor" size="6" value="1"></input>
 				<input type="text" name="name" size="6" value="Währungsname"></input>
 				<input type="Submit" name="action" value="add"/>

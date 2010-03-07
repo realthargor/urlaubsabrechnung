@@ -32,7 +32,10 @@ class BaseRequestHandler(webapp.RequestHandler):
 		  'login_url': users.CreateLoginURL(self.request.uri),
 		  'logout_url': users.CreateLogoutURL('/'),
 		  'application_name': 'Urlaubsabrechnung',
+		  'project': self.project,
 		}
+		if self.project:
+			values['project_key'] = self.project.key()
 		values.update(template_values)
 		directory = os.path.dirname(__file__)
 		path = os.path.join(directory, os.path.join('templates', template_name + '_en.html'))
@@ -50,20 +53,7 @@ class BaseRequestHandler(webapp.RequestHandler):
 		self.response.set_status(400)
 		self.response.out.write('<p>%(message)s</p>' % {'message':str(exception)})
 	
-	# checks, if the user has at least the required rights
-	# to the given project
-	# throws an exception, if the rights are not sufficent
-	# returns a tuple with actual project and the  rights otherwise	
-	def getandcheckproject(self, required_rights):
-		try:
-			project = Project.get(self.request.get('project',''))
-			if (not project):
-				raise Exception("Unknown project!")
-			# check rights of current user for this project, and deny access if not permitable
-			rights = ProjectRights.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=project).get()
-			if (not rights) or (rights.right<required_rights):
-				raise Exception("Access denied!")
-			return (project, rights.right)
-		except BadKeyError:
-			self.response.clear()
-			self.redirect("/")
+	""" gets the project if applicable """
+	def updateproject(self):
+		k = self.request.get('project','')
+		self.project = Project.get(k) if k!='' else None

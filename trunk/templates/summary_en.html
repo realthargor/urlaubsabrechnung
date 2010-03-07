@@ -2,8 +2,16 @@
 
 {% block body %}	
 	<h1>{{ project.name }}</h1>
-	<h2>Ergebnis</h2> 
-	{{ transactions }}
+	{%if transactions %}
+		<h2>Ergebnis</h2>
+<!--		<table>
+			<thead>
+				<tr>
+				</tr>
+			</thead>
+		</table> -->
+		{{ transactions }}
+	{%endif%}
 	<h2>Gruppen</h2>
 	{{ groups }}
 	<h2>Währungen</h2>

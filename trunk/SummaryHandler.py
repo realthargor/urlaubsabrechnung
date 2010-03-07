@@ -22,12 +22,10 @@ from google.appengine.api import mail
 											
 class SummaryHandler(BaseRequestHandler):
 	def	get(self):
-		(project, right)=self.getandcheckproject(1)
+		self.updateproject()
 		# generate output
 		self.generate('summary', {
-			'project': project,
-			'project_key': project.key(),
-			'transactions': project.TransactionTable(),
-			'groups': project.GroupDefList(),
-			'currencies': project.CurrencyDefList()
+			'transactions': self.project.TransactionTable(),
+			'groups': self.project.GroupDefList(),
+			'currencies': self.project.CurrencyDefList()
 		})
