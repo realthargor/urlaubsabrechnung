@@ -33,7 +33,11 @@ class CurrenciesHandler(BaseRequestHandler):
 		
 		elif action=='add':
 			# add a new currency
-			Currency(project=project, name=self.request.get('name'), divisor=float(self.request.get('divisor', '1'))).put()
+			divisor=float(self.request.get('divisor', '1'))
+			if divisor<0.01: raise Exception("Divisor must be greater or equal to 0.01")
+			factor=float(self.request.get('factor', '1'))
+			if factor<0.01: raise Exception("Factor must be greater or equal to 0.01")
+			Currency(project=project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
 			# generate std output
 			self.get()
 
@@ -49,8 +53,13 @@ class CurrenciesHandler(BaseRequestHandler):
 		elif action=='update':
 			# update existing currency
 			c = Currency.get(self.request.get('key'))
+			divisor=float(self.request.get('divisor', '1'))
+			if divisor<0.01: raise Exception("Divisor must be greater or equal to 0.01")
+			factor=float(self.request.get('factor', '1'))
+			if factor<0.01: raise Exception("Factor must be greater or equal to 0.01")
 			c.name = self.request.get('name', c.name)
-			c.divisor = float(self.request.get('divisor', c.divisor))
+			c.divisor = divisor
+			c.factor = factor
 			c.put()
 			# generate std output
 			self.get()
@@ -67,6 +76,7 @@ class CurrenciesHandler(BaseRequestHandler):
 				{
 					'name': currency.name,
 					'divisor': currency.divisor,
+					'factor': currency.factor,
 					'key': currency.key(),
 				} for currency in project.currency_set]
 		})

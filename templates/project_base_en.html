@@ -7,11 +7,17 @@
 {% block buttons %}
 <span class="item">
 	<input type="button" onclick="location.href='/'" value="Projektliste"/>
-	<input type="button" onclick="location.href='/summary?project={{ project_key }}'" value="Report"/>
-	<input type="button" onclick="location.href='/transactions?project={{ project_key }}'" value="Transaktionen"/>
-	<input type="button" onclick="location.href='/accounts?project={{ project_key }}'" value="Konten"/>
-	<input type="button" onclick="location.href='/currencies?project={{ project_key }}'" value="Währungen"/>
-	<input type="button" onclick="location.href='/access?project={{ project_key }}'" value="Zugriff/Einladungen"/>
+	{%if project %}
+		{%if project.RightReport %}
+			<input type="button" onclick="location.href='/summary?project={{ project_key }}'" value="Report"/>
+		{%endif%}
+		{%if project.RightTransaction %}
+			<input type="button" onclick="location.href='/transactions?project={{ project_key }}'" value="Transaktionen"/>
+		{%endif%}
+		<input type="button" onclick="location.href='/accounts?project={{ project_key }}'" value="Konten"/>
+		<input type="button" onclick="location.href='/currencies?project={{ project_key }}'" value="Währungen"/>
+		<input type="button" onclick="location.href='/access?project={{ project_key }}'" value="Zugriff/Einladungen"/>
+	{%endif%}
 </span>
 {% endblock %}
 

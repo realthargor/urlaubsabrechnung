@@ -20,18 +20,25 @@ from datetime import datetime
 from django.utils import simplejson as json
 from google.appengine.api import mail
 											
-class ProjectsHandler(BaseRequestHandler):
+class ProjectsHandler(BaseRequestHandler):	
 	def	get(self):
 		if self.checklogin():
 			return;
-		self.generate('projects', {
-			'projects':  [{'name': right.project.name, 'canedit':right.right>1, 'id':right.project.key()} for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user())],
-		})
+		self.updateproject()
+		if users.is_current_user_admin():
+			self.generate('projects', {
+				'projects':  [{'name': project.name, 'rights':project.rights, 'id':project.key()} for project in Project.all()],
+			})
+		else:
+			self.generate('projects', {
+				'projects':  [{'name': right.project.name, 'rights':right.right, 'id':right.project.key()} for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user())],
+			})
 	
 	def	post(self):
 		if not users.GetCurrentUser():
 			self.response.out.write(users.CreateLoginURL("/"))
 			return;
+		self.updateproject()
 		action = self.request.get('action','add')
 		if action=='add':
 			# create the project and return the new location to go to

@@ -52,10 +52,11 @@
 {% endblock %}
 
 {% block body %}
+	{% if message %}{{ message }}{% endif %}
 	<h1>Meine Projekte</h1>
 	<ul>
 	{% for project in projects %}
-		<li>{{ project.name }}
+		<li>{{ project.name }} {{ project.rights }}
 			<a href="/summary?project={{ project.id }}">[Report]</a>&nbsp;
 			<a href="/transactions?project={{ project.id }}">[Transaktionen]</a>&nbsp;
 			<button id="project_add" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.id }}')">Projekt aus meiner Liste entfernen</button>
