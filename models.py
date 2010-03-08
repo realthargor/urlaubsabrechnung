@@ -143,63 +143,22 @@ class Project(db.Model):
 		return res.getvalue()
 		
 	""" returns string with a a html table of all transactions """
-	def TransactionTable(self):
+	def ResultData(self):
 		# TRANSACTIONS
-		res = StringIO.StringIO()
-		eps = self.Endpoints()
-		res.write("""
-		<table border="1" cellspacing="1" cellpadding="0" class="smallFont"	>
-			<thead>
-				<tr>
-					<th colspan="5"/>
-					<th colspan="%(endpoints)d">Belastung</th>
-					<th colspan="1"/>
-				</tr>
-				<tr>
-					<th>Datum</th>
-					<th>Was</th>
-					<th>Wert</th>
-					<th>Von</th>
-					<th>An</th>""" % { 
-						'baseCurrency': self.currency,
-						'endpoints': len(eps)
-					} )				
-		for ep in eps: 
-			res.write('<th>%(name)s</th>' % { 'name': ep.name, 'baseCurrency': self.currency } )
-		res.write('<th>Letzte Aenderung</th>')
-		res.write('</tr></thead><tbody>')				
+		res = dict()
+		endpoints = self.Endpoints()
+		res['endpoints']=endpoints
 		sums = dict()
+		tr=[];
 		for transaction in sorted(self.transaction_set, cmp=lambda x,y: cmp(x.date, y.date)):
-			res.write("""
-					<tr class="%(class)s">
-						<td>%(date)s</td>
-						<td>%(text)s</td>
-						<td >%(amount).2f%(currency)s</td>
-						<td>%(source)s</td>
-						<td>%(dest)s</td>""" % { 
-							'date': transaction.date.strftime("%d.%m.%Y"),
-							'source': transaction.source.name,
-							'dest': transaction.dest.name,
-							'amount': transaction.ammount,
-							'currency': transaction.CurrencyName(),
-							'amountBase': transaction.AmountBase(),
-							'text': transaction.text,
-							'class': "check" if transaction.check else ""							
-						})
 			affected = transaction.UpdateSums(balance=dict())
-			transaction.UpdateSums(balance=sums)
-			for ep in eps: 
-				res.write(self.formatTableValue(affected.get(ep.key(),0)))
-			res.write('<td>%(lastmodified)s by %(modifiedby)s</td>' % {
-					'lastmodified': transaction.lastmod,
-					'modifiedby': transaction.user
-				})
-			res.write('</tr>')
-		res.write('</tbody><tfoot><tr class="results"><td colspan="5">Endergebnis (rot=Soll, schwarz=Haben)</td>')
-		for ep in eps: 
-			res.write(self.formatTableValue(sums.get(ep.key(), 0)))
-		res.write('<td/></tr></tfoot></table>')		
-		return res.getvalue()
+			transaction.affected = [affected.get(endpoint.key(),0) for endpoint in endpoints]
+			for (key,value) in affected.iteritems():
+				sums[key]=sums.get(key,0)+value
+			tr.append(transaction)
+		res['transactions'] = tr
+		res['sums']= [ round(sum,2) for sum in sums.itervalues() ]
+		return res
   
 class Account(polymodel.PolyModel):
 	name = db.StringProperty(required=True)

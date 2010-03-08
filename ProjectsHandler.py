@@ -21,6 +21,7 @@ from django.utils import simplejson as json
 from google.appengine.api import mail
 											
 class ProjectsHandler(BaseRequestHandler):	
+	@login_required
 	def	get(self):
 		if self.checklogin():
 			return;

@@ -2,15 +2,52 @@
 
 {% block body %}	
 	<h1>{{ project.name }}</h1>
-	{%if transactions %}
+	{%if result %}
 		<h2>Ergebnis</h2>
-<!--		<table>
+		<table class="smallFont">
 			<thead>
 				<tr>
+					<th colspan="5"/>
+					<th colspan="{{result.endpoints|length}}">Belastung</th>
+					<th colspan="1"/>
+				</tr>
+				<tr>
+					<th>Datum</th>
+					<th>Was</th>
+					<th>Wert</th>
+					<th>Von</th>
+					<th>An</th>
+					{% for ep in result.endpoints %}
+						<th id="{{ep.key}}">{{ep.name}}</th>
+					{% endfor %}
+					<th>Letzte Änderung</th>
 				</tr>
 			</thead>
-		</table> -->
-		{{ transactions }}
+			<tbody>
+				{% for t in result.transactions %}
+				<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}">
+					<td>{{t.date|date:"Y-m-d"}}</td>
+					<td>{{t.text}}</td>
+					<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
+					<td>{{t.source.name}}</td>
+					<td>{{t.dest.name}}</td>
+					{% for value in t.affected %}
+						<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
+					{% endfor %}
+					<td style="font-size: 80%;">{{ t.lastmod }} by <a href="mailto:{{ t.user }}">{{ t.user }}</a></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+			<tfoot>
+				<tr class="results">
+					<td colspan="5">Endergebnis (rot=Soll, schwarz=Haben)</td>
+					{% for value in result.sums %}
+						<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
+					{% endfor %}
+					<td/>
+				</tr>
+			</tfoot>
+		</table>
 	{%endif%}
 	<h2>Gruppen</h2>
 	{{ groups }}

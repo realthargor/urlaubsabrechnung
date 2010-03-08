@@ -71,6 +71,7 @@ class CurrenciesHandler(BaseRequestHandler):
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 		
+	@login_required
 	def	get(self):
 		self.updateproject()
 		self.generate('currencies', {'currencies': self.project.currency_set })
