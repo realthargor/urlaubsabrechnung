@@ -21,11 +21,12 @@ from django.utils import simplejson as json
 from google.appengine.api import mail
 											
 class SummaryHandler(BaseRequestHandler):
+	@login_required
 	def	get(self):
 		self.updateproject()
 		# generate output
 		self.generate('summary', {
-			'transactions': self.project.TransactionTable(),
+			'result': self.project.ResultData(),
 			'groups': self.project.GroupDefList(),
 			'currencies': self.project.CurrencyDefList()
 		})
