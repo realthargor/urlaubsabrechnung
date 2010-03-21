@@ -75,6 +75,7 @@ class TransactionsHandler(BaseRequestHandler):
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 	
 	# This handler shows the main transactions page
+	@login_required
 	def	get(self):
 		self.updateproject()
 		self.generate('transactions')
