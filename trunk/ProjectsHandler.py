@@ -1,24 +1,10 @@
 #!/usr/bin/env python
-import os
-import cgi
-import datetime
-import wsgiref.handlers
-import StringIO
-import random
+from models import Project, ProjectRights
+from google.appengine.api import users
 
-from models import *
 from BaseRequestHandler import BaseRequestHandler
 
-from google.appengine.ext import db
-from google.appengine.api import users
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template 
-from google.appengine.ext.db import polymodel
-from google.appengine.ext.db import BadKeyError
 from google.appengine.ext.webapp.util import login_required
-from datetime import datetime
-from django.utils import simplejson as json
-from google.appengine.api import mail
 											
 class ProjectsHandler(BaseRequestHandler):	
 	@login_required
@@ -40,8 +26,8 @@ class ProjectsHandler(BaseRequestHandler):
 			self.response.out.write(users.CreateLoginURL("/"))
 			return;
 		self.updateproject()
-		action = self.request.get('action','add')
-		if action=='add':
+		action = self.request.get('action', 'add')
+		if action == 'add':
 			# create the project and return the new location to go to
 			project = Project(name=self.request.get('name'), currency=self.request.get('currency'))
 			project.put()
@@ -50,9 +36,9 @@ class ProjectsHandler(BaseRequestHandler):
 			rights.put()
 			# redirect to summary
 			self.response.out.write("/summary?project=%(key)s" % {'key':project.key()})
-		elif action=='delete':
+		elif action == 'delete':
 			# remove me from the projects right list
-			project = Project.get(self.request.get('project',''))
+			project = Project.get(self.request.get('project', ''))
 			if (not project):
 				raise Exception("Unknown project!")
 			# check rights of current user for this project, and deny access if not permitable

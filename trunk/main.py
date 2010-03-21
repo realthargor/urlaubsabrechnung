@@ -1,20 +1,15 @@
 ﻿#!/usr/bin/env python
-import os
-import cgi
 import wsgiref.handlers
 
 from google.appengine.ext import webapp
+from ProjectsHandler import ProjectsHandler
+from SummaryHandler import SummaryHandler
+from TransactionsHandler import TransactionsHandler
+from CurrenciesHandler import CurrenciesHandler
+from AccountsHandler import AccountsHandler
+from AccessHandler import AccessHandler
+from JoinHandler import JoinHandler
 
-from models import *
-from BaseRequestHandler import BaseRequestHandler
-from ProjectsHandler import *
-from SummaryHandler import *
-from TransactionsHandler import *
-from CurrenciesHandler import *
-from AccountsHandler import *
-from AccessHandler import *
-from JoinHandler import *
-											
 # ******************************************************************************
 # ** URL Mapping and MAIN routine **********************************************
 # ******************************************************************************
@@ -29,7 +24,7 @@ application = webapp.WSGIApplication([
  ], debug=True)
 
 def main():
-  wsgiref.handlers.CGIHandler().run(application)
+	wsgiref.handlers.CGIHandler().run(application)
 
 if __name__ == '__main__':
-  main()
+	main()
