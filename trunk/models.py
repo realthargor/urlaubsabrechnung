@@ -25,17 +25,17 @@ class Project(db.Model):
 	""" returns all list of all projects the user actually has rights for """
 	@staticmethod
 	def all():
-		projects = ()
+		projects = []
 		for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user()):
 			right.project.rights = right.right			
 			projects.append(right.project)
 		return projects				
 		
 	def RightReport(self):
-		return self.rights & 1
+		return self.rights > 0
 		
 	def RightTransaction(self):
-		return self.rights & (2 | 4 | 8)
+		return self.rights > 1
 		
 	def RightReportView(self):
 		return self.rights & 1
@@ -244,7 +244,7 @@ class Transaction(db.Model):
 	date = db.DateTimeProperty(auto_now_add=True)
 	user = db.UserProperty(auto_current_user=True)
 	check = db.BooleanProperty(default=False)
-	lastmod = db.TimeProperty(auto_now=True)
+	lastmod = db.DateTimeProperty(auto_now=True)
 	
 	""" returns the amount of the transaction using in the project currency """
 	def AmountBase(self):

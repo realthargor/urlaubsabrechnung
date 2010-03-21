@@ -1,7 +1,5 @@
-ï»¿{% extends "project_base_en.html" %}
-
-{% block head %}
-	<script type="text/javascript">
+{% extends "project_base_en.html" %} {% block head %}
+<script type="text/javascript">
 		project_id = "{{ project_key }}";
 		
 		function removeButtonClick(event)
@@ -213,51 +211,72 @@
 			}
 		});
 	</script>
-{% endblock %}
-
-{% block body %}
+{% endblock %} {% block body %}
 <form id="account_form">
-  <fieldset>
-  	<legend>Konten</legend>
-  	<table>
-		<tr>
-			<td>
-				Gruppenkonten
-			</td>
-			<td>
-				Mitglieder
-			</td>
-			<td>
-				Personen
-			</td>
-		</tr>
-		<tr>
-			<td><input type="text" id="group_name" class="formInputWidth" size="30"/></td>
-			<td><input type="text" class="formInputWidth" name="weight" id="member_weight" size="1" value="1" maxlength="4"/></td>
-			<td><input type="text" id="person_name" class="formInputWidth" size="6"/></td>
-		</tr>
-		<tr>
-			<td><button name="action" class="buttonWidth" type="button" id="group_add">Neue Gruppe erstellen</button></td>
-			<td><button name="action" class="buttonWidth" type="button" id="member_add">AusgewÃ¤hlte Personen zur Gruppe hinzufÃ¼gen</button></td>
-			<td><button name="action" class="buttonWidth" type="button" id="person_add">Neue Person hinzufÃ¼gen</button><br/></td>
-		</tr>
-		<tr>
-			<td><button name="action" class="buttonWidth" type="button" id="group_rename">Gruppe umbenennen</button></td>
-			<td/>
-			<td><button name="action" class="buttonWidth" type="button" id="person_rename">Person umbenennen</button></td>
-		</tr>
-		<tr>
-			<td><button name="action" class="buttonWidth" type="button" id="group_remove">Gruppe lÃ¶schen</button></td>
-			<td><button name="action" class="buttonWidth" type="button" id="member_remove">AusgewÃ¤hlte Mitglieder entfernen</button></td>
-			<td><button name="action" class="buttonWidth" type="button" id="person_remove">Person lÃ¶schen</button></td>
-		</tr>
-		<tr>
-			<td><select class="formInputWidth"  id="group_list"  size="10"                    ></select></td>
-			<td><select class="formInputWidth"  id="member_list" size="10" multiple="multiple"></select></td>
-			<td><select class="formInputWidth"  id="person_list" size="10" multiple="multiple"></select></td>
-		</tr>
-  	</table>  
-  </fieldset>
+<fieldset><legend>Konten</legend>
+<table>
+	<tr>
+		<td>Gruppenkonten</td>
+		<td>Mitglieder</td>
+		<td>Personen</td>
+	</tr>
+	<tr>
+		<td><input type="text" id="group_name" class="formInputWidth"
+			size="30" /></td>
+		<td><input type="text" class="formInputWidth" name="weight"
+			id="member_weight" size="1" value="1" maxlength="4" /></td>
+		<td><input type="text" id="person_name" class="formInputWidth"
+			size="6" /></td>
+	</tr>
+	<tr>
+		<td>
+		<button name="action" class="buttonWidth" type="button" id="group_add">Neue
+		Gruppe erstellen</button>
+		</td>
+		<td>
+		<button name="action" class="buttonWidth" type="button"
+			id="member_add">Ausgewählte Personen zur Gruppe hinzufügen</button>
+		</td>
+		<td>
+		<button name="action" class="buttonWidth" type="button"
+			id="person_add">Neue Person hinzufügen</button>
+		<br />
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<button name="action" class="buttonWidth" type="button"
+			id="group_rename">Gruppe umbenennen</button>
+		</td>
+		<td />
+		<td>
+		<button name="action" class="buttonWidth" type="button"
+			id="person_rename">Person umbenennen</button>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<button name="action" class="buttonWidth" type="button"
+			id="group_remove">Gruppe löschen</button>
+		</td>
+		<td>
+		<button name="action" class="buttonWidth" type="button"
+			id="member_remove">Ausgewählte Mitglieder entfernen</button>
+		</td>
+		<td>
+		<button name="action" class="buttonWidth" type="button"
+			id="person_remove">Person löschen</button>
+		</td>
+	</tr>
+	<tr>
+		<td><select class="formInputWidth" id="group_list" size="10"></select></td>
+		<td><select class="formInputWidth" id="member_list" size="10"
+			multiple="multiple"></select></td>
+		<td><select class="formInputWidth" id="person_list" size="10"
+			multiple="multiple"></select></td>
+	</tr>
+</table>
+</fieldset>
 </form>
 <p id="progress" style="display: none;">Aktualisierung&#8230;</p>
 <p id="result"></p>

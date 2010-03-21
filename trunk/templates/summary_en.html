@@ -1,26 +1,41 @@
-﻿{% extends "project_base_en.html" %}
+{% extends "project_base_en.html" %}
+
+{% block head %}
+    <link href="/static/css/TSorter_1.css" rel="stylesheet" type="text/css"/>
+	<script type="text/javascript" src="/static/javascript/TSorter_1.js"></script>
+	<script type="text/javascript">
+		project_id = "{{ project_key }}";		
+	  	// run some startup code
+		document.observe("dom:loaded", function ()
+		{  			
+			var transactionTableSorter = new TSorter;
+			transactionTableSorter.init('transactionTable');			
+		});		
+	</script>
+{% endblock %}
+
 
 {% block body %}	
 	<h1>{{ project.name }}</h1>
 	{%if result %}
 		<h2>Ergebnis</h2>
-		<table class="smallFont">
+		<table id="transactionTable" class="smallFont sortable">
 			<thead>
 				<tr>
-					<th colspan="5"/>
+					<th colspan="5">&nbsp;</th>
 					<th colspan="{{result.endpoints|length}}">Belastung</th>
-					<th colspan="1"/>
+					<th colspan="1">&nbsp;</th>
 				</tr>
 				<tr>
-					<th>Datum</th>
-					<th>Was</th>
-					<th>Wert</th>
-					<th>Von</th>
-					<th>An</th>
+					<th class="sortable">Datum</th>
+					<th class="sortable">Was</th>
+					<th class="sortable" abbr="currency">Wert</th>
+					<th class="sortable">Von</th>
+					<th class="sortable">An</th>
 					{% for ep in result.endpoints %}
-						<th id="{{ep.key}}">{{ep.name}}</th>
+						<th class="sortable" id="{{ep.key}}" abbr="currency">{{ep.name}}</th>
 					{% endfor %}
-					<th>Letzte Änderung</th>
+					<th class="sortable" abbr="last_change">Letzte Änderung</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,13 +49,13 @@
 					{% for value in t.affected %}
 						<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
 					{% endfor %}
-					<td style="font-size: 80%;">{{ t.lastmod }} by <a href="mailto:{{ t.user }}">{{ t.user }}</a></td>
+					<td style="font-size: 80%;">{{ t.lastmod|date:"Y-m-d" }} {{ t.lastmod|time }} by <a href="mailto:{{ t.user }}">{{ t.user }}</a></td>
 				</tr>
 				{% endfor %}
 			</tbody>
 			<tfoot>
 				<tr class="results">
-					<td colspan="5">Endergebnis (rot=Soll, schwarz=Haben)</td>
+					<td colspan="5">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
 					{% for value in result.sums %}
 						<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
 					{% endfor %}

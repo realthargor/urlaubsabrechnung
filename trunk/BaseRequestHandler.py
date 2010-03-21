@@ -1,20 +1,8 @@
 import os
-import cgi
-import datetime
-import wsgiref.handlers
-import StringIO
-import random
-
-from models import *
-
-from google.appengine.ext import db
-from google.appengine.api import users
+from models import Project
 from google.appengine.ext import webapp
+from google.appengine.api import users
 from google.appengine.ext.webapp import template 
-from google.appengine.ext.db import polymodel
-from google.appengine.ext.db import BadKeyError
-from google.appengine.ext.webapp.util import login_required
-from datetime import datetime
 
 # ******************************************************************************
 # ** Base class for all handlers ***********************************************
@@ -57,5 +45,5 @@ class BaseRequestHandler(webapp.RequestHandler):
 	
 	""" gets the project if applicable """
 	def updateproject(self):
-		k = self.request.get('project','')
-		self.project = Project.get(k) if k!='' else None
+		k = self.request.get('project', '')
+		self.project = Project.get(k) if k != '' else None
