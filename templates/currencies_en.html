@@ -1,4 +1,4 @@
-ï»¿{% extends "project_base_en.html" %}
+{% extends "project_base_en.html" %}
 
 {% block head %}
 	<script type="text/javascript">
@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block body %}
-	<h2>WÃ¤hrungen</h2> 
+	<h2>Währungen</h2>
+	<ul> 
 	{% for c in currencies %}
 		<li>
 			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
@@ -23,7 +24,7 @@
 			<form action="/currencies?project={{project_key}}" method="post" enctype="multipart/form-data">
 				<input type="text" name="factor" size="6" value="1"></input>{{ project.currency }} =
 				<input type="text" name="divisor" size="6" value="1"></input>
-				<input type="text" name="name" size="6" value="WÃ¤hrungsname"></input>
+				<input type="text" name="name" size="6" value="Währungsname"></input>
 				<input type="Submit" name="action" value="add"/>
 			</form>
 		</li>

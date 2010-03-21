@@ -1,0 +1,16 @@
+/*--------------------SORTABLE TABLE SAMPLE STYLES-------------------------*/
+.sortable th.descend {
+	background-image: url(/static/images/caret_up.gif);
+}
+
+.sortable th.ascend {
+	background-image: url(/static/images/caret_down.gif);
+}
+
+.sortable th.sortable {
+	background-color: #E4EDFC;
+	background-position: 95% 50%;
+	background-repeat: no-repeat;
+	padding: 3px 15px 3px 3px;
+	cursor: pointer;
+}
