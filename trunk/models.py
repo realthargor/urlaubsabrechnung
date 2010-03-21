@@ -151,7 +151,7 @@ class Project(db.Model):
 				sums[key] = sums.get(key, 0) + value
 			tr.append(transaction)
 		res['transactions'] = tr
-		res['sums'] = [ round(sum, 2) for sum in sums.itervalues() ]
+		res['sums'] = [round(sums.get(endpoint.key(), 0),2) for endpoint in endpoints] 
 		return res
 
 
