@@ -136,24 +136,20 @@ class Project(db.Model):
 		res.write('</ul>')
 		return res.getvalue()
 		
-	""" returns string with a a html table of all transactions """
-	def ResultData(self):
+	""" defines accounts and transactions members for the project summary report """
+	def CalculateResult(self):
 		# TRANSACTIONS
-		res = dict()
-		endpoints = self.Endpoints()
-		res['endpoints'] = endpoints
+		self.accounts = self.Endpoints();
 		sums = dict()
-		tr = [];
+		self.transactions = [];
 		for transaction in sorted(self.transaction_set, cmp=lambda x, y: cmp(x.date, y.date)):
 			affected = transaction.UpdateSums(balance=dict())
-			transaction.affected = [affected.get(endpoint.key(), 0) for endpoint in endpoints]
+			transaction.affected = [affected.get(endpoint.key(), 0) for endpoint in self.accounts]
 			for (key, value) in affected.iteritems():
 				sums[key] = sums.get(key, 0) + value
-			tr.append(transaction)
-		res['transactions'] = tr
-		res['sums'] = [round(sums.get(endpoint.key(), 0),2) for endpoint in endpoints] 
-		return res
-
+			self.transactions.append(transaction)
+		for endpoint in self.accounts:
+			endpoint.sum = sums.get(endpoint.key(), 0)
 
 class Account(polymodel.PolyModel):
 	name = db.StringProperty(required=True)

@@ -27,7 +27,7 @@ class CurrenciesHandler(BaseRequestHandler):
 			if factor < 0.01: raise Exception("Factor must be greater or equal to 0.01")
 			Currency(project=self.project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
 			# generate std output
-			self.get()
+			self.generate('currencies', {'currencies': self.project.currency_set })
 
 		elif action == 'delete':
 			# delete existing currency
@@ -36,7 +36,7 @@ class CurrenciesHandler(BaseRequestHandler):
 				t.delete()
 			c.delete()
 			# generate std output
-			self.get()
+			self.generate('currencies', {'currencies': self.project.currency_set })
 			
 		elif action == 'update':
 			# update existing currency
@@ -50,8 +50,7 @@ class CurrenciesHandler(BaseRequestHandler):
 			c.factor = factor
 			c.put()
 			# generate std output
-			self.get()
-			
+			self.generate('currencies', {'currencies': self.project.currency_set })			
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 		
