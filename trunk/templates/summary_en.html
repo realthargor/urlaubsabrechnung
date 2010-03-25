@@ -17,53 +17,62 @@
 
 {% block body %}	
 	<h1>{{ project.name }}</h1>
-	{%if result %}
-		<h2>Ergebnis</h2>
-		<table id="transactionTable" class="smallFont sortable">
+	<h2>Ergebnis</h2>
+		<table>
 			<thead>
-				<tr>
-					<th colspan="5">&nbsp;</th>
-					<th colspan="{{result.endpoints|length}}">Belastung</th>
-					<th colspan="1">&nbsp;</th>
-				</tr>
-				<tr>
-					<th class="sortable">Datum</th>
-					<th class="sortable">Was</th>
-					<th class="sortable" abbr="currency">Wert</th>
-					<th class="sortable">Von</th>
-					<th class="sortable">An</th>
-					{% for ep in result.endpoints %}
-						<th class="sortable" id="{{ep.key}}" abbr="currency">{{ep.name}}</th>
-					{% endfor %}
-					<th class="sortable" abbr="last_change">Letzte Änderung</th>
-				</tr>
+				<tr><th>Name</th><th>Summe</th></tr>
 			</thead>
 			<tbody>
-				{% for t in result.transactions %}
-				<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}">
-					<td>{{t.date|date:"Y-m-d"}}</td>
-					<td>{{t.text}}</td>
-					<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
-					<td>{{t.source.name}}</td>
-					<td>{{t.dest.name}}</td>
-					{% for value in t.affected %}
-						<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
-					{% endfor %}
-					<td style="font-size: 80%;">{{ t.lastmod|date:"Y-m-d" }} {{ t.lastmod|time }} by <a href="mailto:{{ t.user }}">{{ t.user }}</a></td>
-				</tr>
-				{% endfor %}
+			{% for account in project.accounts %}
+				<tr><td>{{account.name}}</td><td style="text-align:right;">{{account.sum|floatformat:2}}{{project.currency}}</td></tr>
+			{% endfor %}
 			</tbody>
-			<tfoot>
-				<tr class="results">
-					<td colspan="5">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
-					{% for value in result.sums %}
-						<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
-					{% endfor %}
-					<td/>
-				</tr>
-			</tfoot>
 		</table>
-	{%endif%}
+	<h2>Transaktionen</h2>
+	<table id="transactionTable" class="smallFont sortable">
+		<thead>
+			<tr>
+				<th colspan="5">&nbsp;</th>
+				<th colspan="{{result.accounts|length}}">Belastung</th>
+				<th colspan="1">&nbsp;</th>
+			</tr>
+			<tr>
+				<th class="sortable">Datum</th>
+				<th class="sortable">Was</th>
+				<th class="sortable" abbr="currency">Wert</th>
+				<th class="sortable">Von</th>
+				<th class="sortable">An</th>
+				{% for account in project.accounts %}
+					<th class="sortable" id="{{account.key}}" abbr="currency">{{account.name}}</th>
+				{% endfor %}
+				<th class="sortable" abbr="last_change">Letzte Änderung</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for t in project.transactions %}
+			<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}">
+				<td>{{t.date|date:"Y-m-d"}}</td>
+				<td>{{t.text}}</td>
+				<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
+				<td>{{t.source.name}}</td>
+				<td>{{t.dest.name}}</td>
+				{% for value in t.affected %}
+					<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
+				{% endfor %}
+				<td style="font-size: 80%;">{{ t.lastmod|date:"Y-m-d" }} {{ t.lastmod|time }} by <a href="mailto:{{ t.user }}">{{ t.user }}</a></td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr class="results">
+				<td colspan="5">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
+				{% for account in project.accounts %}
+					<td style="text-align:right;">{{account.sum|floatformat:2}}{{project.currency}}</td>
+				{% endfor %}
+				<td/>
+			</tr>
+		</tfoot>
+	</table>
 	<h2>Gruppen</h2>
 	{{ groups }}
 	<h2>Währungen</h2>
