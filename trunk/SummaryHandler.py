@@ -6,10 +6,7 @@ class SummaryHandler(BaseRequestHandler):
 	@login_required
 	def	get(self):
 		self.updateproject()
-		# calculate the result
+		# calculate the result, this adds additional result fields to the self.project object
 		self.project.CalculateResult();
 		# generate output
-		self.generate('summary', {
-			'groups': self.project.GroupDefList(),
-			'currencies': self.project.CurrencyDefList()
-		})
+		self.generate('summary');

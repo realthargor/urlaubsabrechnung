@@ -16,8 +16,7 @@
 
 
 {% block body %}	
-	<h1>{{ project.name }}</h1>
-	<h2>Ergebnis</h2>
+	<h3>Ergebnis</h3>
 		<table>
 			<thead>
 				<tr><th>Name</th><th>Summe</th></tr>
@@ -28,7 +27,7 @@
 			{% endfor %}
 			</tbody>
 		</table>
-	<h2>Transaktionen</h2>
+	<h3>Transaktionen</h3>
 	<table id="transactionTable" class="smallFont sortable">
 		<thead>
 			<tr>
@@ -56,8 +55,16 @@
 				<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
 				<td>{{t.source.name}}</td>
 				<td>{{t.dest.name}}</td>
-				{% for value in t.affected %}
-					<td style="text-align:right;">{{value|floatformat:2}}{{project.currency}}</td>
+				{% for v in t.affected %}
+					{%if v.negative %}
+					<td style="color: red; text-align:right;">{{v.value|floatformat:2}}{{project.currency}}</td>
+					{%else%}
+						{%if v.positive %}
+						<td style="color: black; text-align:right;">{{v.value|floatformat:2}}{{project.currency}}</td>
+						{%else%}
+						<td></td>
+						{% endif %}
+					{% endif %}
 				{% endfor %}
 				<td style="font-size: 80%;">{{ t.lastmod|date:"Y-m-d" }} {{ t.lastmod|time }} by <a href="mailto:{{ t.user }}">{{ t.user }}</a></td>
 			</tr>
@@ -73,8 +80,17 @@
 			</tr>
 		</tfoot>
 	</table>
-	<h2>Gruppen</h2>
-	{{ groups }}
-	<h2>Währungen</h2>
-	{{ currencies }}
+	<h3>Gruppen</h3>
+	<ul>
+		{% for group in project.groups %}
+		<li>{{group.name}} &rArr;  {% for m in group.members %} {{m.name}}({{m.weight}}/{{group.sum}}={{m.part|floatformat:1}}%)&nbsp;{% endfor %}				
+		</li>
+		{% endfor %}
+	</ul>
+	<h3>Währungen</h3>
+	<ul>
+		{% for c in project.currency_set %}
+			<li>{{c.factor}}&nbsp;{{project.currency}}&nbsp;=&nbsp;{{c.divisor}}&nbsp;{{c.name}}</li>
+		{% endfor %}
+	</ul>
 {% endblock %}
