@@ -2,8 +2,6 @@
 # ******************************************************************************
 # ** DATA MODELS ***************************************************************
 # ******************************************************************************
-import StringIO
-
 from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.ext.db import polymodel
@@ -87,55 +85,7 @@ class Project(db.Model):
 		for a in self.person_set:
 			if a.name == name and (account == None or a.key() != account.key()):
 				raise Exception("duplicate name")
-				
-	""" Helper to format a single value """
-	def formatTableValue(self, value):
-		if value < 0:
-			return '<td style="color: red; text-align:right;">%(v).2f%(unit)s</td>' % {'v':-value, 'unit': self.currency }
-		elif value > 0:
-			return '<td style="color: black; text-align:right;">%(v).2f%(unit)s</td>' % {'v':value, 'unit': self.currency}
-		else:
-			return "<td/>"
-			
-	""" Group definition list """
-	def GroupDefList(self):
-		res = StringIO.StringIO()
-		res.write('<ul>')
-		for account in filter(lambda a: not a.IsEndpoint(), self.person_set):
-			parts = account.enquire(100, balance=dict())
-			res.write('<li>%(name)s &rArr; %(members)s</li>' % {
-				'name':account.name,
-				'members': ', '.join(
-					[
-						'%(part).2f%% %(name)s' % {'name': Account.get(partKey).name, 'part':parts[partKey] } 
-					for partKey in parts]
-					)
-			})
-		res.write('</ul>')
-		return res.getvalue()			
-
-	""" Currency defintion list """
-	def CurrencyDefList(self):
-		res = StringIO.StringIO()
-		res.write('<ul>')
-		for currency in self.currency_set:			
-			if currency.divisor == 1 :
-				res.write('<li>%(divisor)f %(name)s = %(factor)f %(base)s</li>' % {
-					'name': currency.name, 	
-					'factor': currency.factor,
-					'divisor': currency.divisor,
-					'base': self.currency
-				})				
-			else:
-				res.write('<li>%(factor)f %(base)s = %(divisor)f %(name)s</li>' % {
-					'name': currency.name, 	
-					'factor': currency.factor,
-					'divisor': currency.divisor,
-					'base': self.currency
-				})
-		res.write('</ul>')
-		return res.getvalue()
-		
+									
 	""" defines accounts and transactions members for the project summary report """
 	def CalculateResult(self):
 		# TRANSACTIONS
@@ -144,13 +94,32 @@ class Project(db.Model):
 		self.transactions = [];
 		for transaction in sorted(self.transaction_set, cmp=lambda x, y: cmp(x.date, y.date)):
 			affected = transaction.UpdateSums(balance=dict())
-			transaction.affected = [affected.get(endpoint.key(), 0) for endpoint in self.accounts]
+			transaction.affected = [{
+									'value':affected.get(endpoint.key(), 0), 
+					   		        'negative':affected.get(endpoint.key(), 0)<0,
+			   		                'positive':affected.get(endpoint.key(), 0)>0,
+			    				   	} for endpoint in self.accounts];
 			for (key, value) in affected.iteritems():
 				sums[key] = sums.get(key, 0) + value
 			self.transactions.append(transaction)
 		for endpoint in self.accounts:
 			endpoint.sum = sums.get(endpoint.key(), 0)
-
+		# GROUPS 		
+		self.groups = []
+		for g in filter(lambda a: not a.IsEndpoint(), self.person_set):
+			g.sum = 0
+			for member in g.member_set:
+				g.sum+=abs(member.weight)
+			g.members = []
+			for member in g.member_set:
+				person = member.person
+				person.weight=abs(member.weight)
+				person.part=100*person.weight/g.sum
+				g.members.append(person)
+			self.groups.append(g)
+		# CURRENCIES
+				
+					
 class Account(polymodel.PolyModel):
 	name = db.StringProperty(required=True)
 	def IsEndpoint(self):
