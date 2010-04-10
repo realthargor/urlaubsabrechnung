@@ -96,12 +96,13 @@ function TSorter() {
 			break;
 		case "currency":
 			get = function(index) {
-				s = getCell(index).firstChild.nodeValue.replace(',', '.');
+				cell = getCell(index);
+				if (cell==null) return -3e30;
+				child = cell.firstChild;
+				if (child==null || child.nodeValue==null) return -3e30;
+				s = child.nodeValue.replace(',', '.');
 				f = parseFloat(s.replace(/[^0-9.-]/g, ''));				
-				if (isNaN(f))
-					f = 0;
-				if (f==0)
-					f=-3e30;
+				if (isNaN(f) || f==0) return -3e30;
 				return f;
 			};
 			break;
