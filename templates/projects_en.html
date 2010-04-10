@@ -1,4 +1,4 @@
-﻿{% extends "base_en.html" %}
+{% extends "base_en.html" %}
 
 {% block head %}
 	<script type="text/javascript">
@@ -57,9 +57,9 @@
 	<ul>
 	{% for project in projects %}
 		<li>{{ project.name }} {{ project.rights }}
-			<a href="/summary?project={{ project.id }}">[Report]</a>&nbsp;
-			<a href="/transactions?project={{ project.id }}">[Transaktionen]</a>&nbsp;
-			<button id="project_add" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.id }}')">Projekt aus meiner Liste entfernen</button>
+			<a href="/summary?project={{ project.key }}">[Report]</a>&nbsp;
+			<a href="/transactions?project={{ project.key }}">[Transaktionen]</a>&nbsp;
+			<button id="project_add" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.key }}')">Projekt aus meiner Liste entfernen</button>
 		</li>
 	{% endfor %}	
 	</ul>
@@ -78,4 +78,18 @@
 			<button id="project_add" type="submit" name="Action" value="Add" onclick="project_AddClick()">Erstellen...</button>
 		</fieldset>
 	</form>
+	{% if projectsAll %}
+	<h1>Andere Projekte</h1>
+		{% for project in projectsAll %}
+			<li>{{ project.name }}
+				<a href="/summary?project={{ project.key }}">[Report]</a>&nbsp;
+				<a href="/transactions?project={{ project.key }}">[Transaktionen]</a>&nbsp;
+				<ul>
+					{% for right in project.projectrights_set %}
+					<li>{{right.user.nickname}} &rArr; {{right.right}}</li>
+					{% endfor %}
+				</ul>
+			</li>
+		{% endfor %}	
+	{% endif %}
 {% endblock %}
