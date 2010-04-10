@@ -11,15 +11,10 @@ class ProjectsHandler(BaseRequestHandler):
 	def	get(self):
 		if self.checklogin():
 			return;
-		self.updateproject()
-		if users.is_current_user_admin():
-			self.generate('projects', {
-				'projects':  [{'name': project.name, 'rights':project.rights, 'id':project.key()} for project in Project.all()],
-			})
-		else:
-			self.generate('projects', {
-				'projects':  [{'name': right.project.name, 'rights':right.right, 'id':right.project.key()} for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user())],
-			})
+		self.generate('projects', { 
+			'projects':  Project.list(),
+			'projectsAll': Project.listAll() if users.is_current_user_admin() else [],  
+		})
 	
 	def	post(self):
 		if not users.GetCurrentUser():

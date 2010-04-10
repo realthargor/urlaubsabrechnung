@@ -22,12 +22,23 @@ class Project(db.Model):
 	
 	""" returns all list of all projects the user actually has rights for """
 	@staticmethod
-	def all():
+	def list():
 		projects = []
 		for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user()):
 			right.project.rights = right.right			
 			projects.append(right.project)
-		return projects				
+		return projects
+	
+	""" returns all list of ALL projects """
+	@staticmethod
+	def listAll():				
+		projects = []
+		# super user sees all projects
+		if users.is_current_user_admin():
+			for p in Project.all():
+				p.rights = 65535
+				projects.append(p)
+		return projects
 		
 	def RightReport(self):
 		return self.rights > 0
@@ -88,6 +99,19 @@ class Project(db.Model):
 									
 	""" defines accounts and transactions members for the project summary report """
 	def CalculateResult(self):
+		# GROUPS 		
+		self.groups = dict()
+		for g in filter(lambda a: not a.IsEndpoint(), self.person_set):
+			g.sum = 0
+			for member in g.member_set:
+				g.sum+=abs(member.weight)
+			g.members = []
+			for member in g.member_set:
+				person = member.person
+				person.weight=abs(member.weight)
+				person.part=100*person.weight/g.sum
+				g.members.append(person)
+			self.groups[str(g.key())] = g;
 		# TRANSACTIONS
 		self.accounts = self.Endpoints();
 		sums = dict()
@@ -104,21 +128,8 @@ class Project(db.Model):
 			self.transactions.append(transaction)
 		for endpoint in self.accounts:
 			endpoint.sum = sums.get(endpoint.key(), 0)
-		# GROUPS 		
-		self.groups = []
-		for g in filter(lambda a: not a.IsEndpoint(), self.person_set):
-			g.sum = 0
-			for member in g.member_set:
-				g.sum+=abs(member.weight)
-			g.members = []
-			for member in g.member_set:
-				person = member.person
-				person.weight=abs(member.weight)
-				person.part=100*person.weight/g.sum
-				g.members.append(person)
-			self.groups.append(g)
-		# CURRENCIES
-				
+		# CURRENCIES				
+		pass
 					
 class Account(polymodel.PolyModel):
 	name = db.StringProperty(required=True)

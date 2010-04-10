@@ -82,7 +82,7 @@
 	</table>
 	<h3>Gruppen</h3>
 	<ul>
-		{% for group in project.groups %}
+		{% for group in project.groups.values %}
 		<li>{{group.name}} &rArr;  {% for m in group.members %} {{m.name}}({{m.weight}}/{{group.sum}}={{m.part|floatformat:1}}%)&nbsp;{% endfor %}				
 		</li>
 		{% endfor %}
