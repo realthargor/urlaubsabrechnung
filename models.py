@@ -103,6 +103,8 @@ class Project(db.Model):
 		self.groups = dict()
 		for g in filter(lambda a: not a.IsEndpoint(), self.person_set):
 			g.sum = 0
+			g.credit = 0
+			g.debit = 0
 			for member in g.member_set:
 				g.sum+=abs(member.weight)
 			g.members = []
@@ -112,24 +114,42 @@ class Project(db.Model):
 				person.part=100*person.weight/g.sum
 				g.members.append(person)
 			self.groups[str(g.key())] = g;
+		# PERSONS
+		self.persons = dict()
+		for person in sorted(self.Endpoints(), cmp=lambda x, y: cmp(x.name, y.name)):
+			person.sum=0
+			person.credit=0
+			person.debit=0
+			self.persons[str(person.key())]=person
 		# TRANSACTIONS
-		self.accounts = self.Endpoints();
-		sums = dict()
 		self.transactions = [];
 		for transaction in sorted(self.transaction_set, cmp=lambda x, y: cmp(x.date, y.date)):
+			# add up credit sum, for persons/groups
+			if transaction.source.IsEndpoint():
+				self.persons[str(transaction.source.key())].credit+=transaction.AmountBase()
+			else:
+				self.groups[str(transaction.source.key())].credit+=transaction.AmountBase()
+			# add up debit sum, for persons/groups
+			if transaction.dest.IsEndpoint():
+				self.persons[str(transaction.dest.key())].debit+=transaction.AmountBase()
+			else:
+				self.groups[str(transaction.dest.key())].debit+=transaction.AmountBase()
+			# update list of affected persons	
 			affected = transaction.UpdateSums(balance=dict())
 			transaction.affected = [{
 									'value':affected.get(endpoint.key(), 0), 
 					   		        'negative':affected.get(endpoint.key(), 0)<0,
 			   		                'positive':affected.get(endpoint.key(), 0)>0,
-			    				   	} for endpoint in self.accounts];
+			    				   	} for endpoint in self.persons.values()];
 			for (key, value) in affected.iteritems():
-				sums[key] = sums.get(key, 0) + value
+				self.persons[str(key)].sum+=value
 			self.transactions.append(transaction)
-		for endpoint in self.accounts:
-			endpoint.sum = sums.get(endpoint.key(), 0)
-		# CURRENCIES				
-		pass
+		# GROUPS
+		for group in self.groups.values():
+			group.credit_minus_debit = group.credit - group.debit
+		# PERSONS
+		for person in self.persons.values():
+			person.group_part = person.sum - (person.credit - person.debit)
 					
 class Account(polymodel.PolyModel):
 	name = db.StringProperty(required=True)
