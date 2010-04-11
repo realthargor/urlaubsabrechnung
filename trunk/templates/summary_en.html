@@ -1,4 +1,4 @@
-{% extends "project_base_en.html" %}
+﻿{% extends "project_base_en.html" %}
 
 {% block head %}
     <link href="/static/css/TSorter_1.css" rel="stylesheet" type="text/css"/>
@@ -17,13 +17,25 @@
 
 {% block body %}	
 	<h3>Ergebnis</h3>
-		<table>
+		<table class="smallFont">
 			<thead>
-				<tr><th>Name</th><th>Summe</th></tr>
+				<tr>
+					<th>Name</th>
+					<th>Summe</th>
+					<th>Einzahlung</th>
+					<th>Auszahlung</th>
+					<th>Gruppenanteile</th>
+				</tr>
 			</thead>
 			<tbody>
-			{% for account in project.accounts %}
-				<tr><td>{{account.name}}</td><td style="text-align:right;">{{account.sum|floatformat:2}}{{project.currency}}</td></tr>
+			{% for person in project.persons.values %}
+				<tr>
+					<td>{{person.name}}</td>
+					<td style="text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
+					<td style="text-align:right;">{{person.credit|floatformat:2}}{{project.currency}}</td>
+					<td style="text-align:right;">{{person.debit|floatformat:2}}{{project.currency}}</td>
+					<td style="text-align:right;">{{person.group_part|floatformat:2}}{{project.currency}}</td>
+				</tr>
 			{% endfor %}
 			</tbody>
 		</table>
@@ -41,8 +53,8 @@
 				<th class="sortable" abbr="currency">Wert</th>
 				<th class="sortable">Von</th>
 				<th class="sortable">An</th>
-				{% for account in project.accounts %}
-					<th class="sortable" id="{{account.key}}" abbr="currency">{{account.name}}</th>
+				{% for person in project.persons.values %}
+					<th class="sortable" abbr="currency">{{person.name}}</th>
 				{% endfor %}
 				<th class="sortable" abbr="last_change">Letzte Änderung</th>
 			</tr>
@@ -73,8 +85,8 @@
 		<tfoot>
 			<tr class="results">
 				<td colspan="5">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
-				{% for account in project.accounts %}
-					<td style="text-align:right;">{{account.sum|floatformat:2}}{{project.currency}}</td>
+				{% for person in project.persons.values %}
+					<td style="text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
 				{% endfor %}
 				<td/>
 			</tr>
@@ -83,7 +95,7 @@
 	<h3>Gruppen</h3>
 	<ul>
 		{% for group in project.groups.values %}
-		<li>{{group.name}} &rArr;  {% for m in group.members %} {{m.name}}({{m.weight}}/{{group.sum}}={{m.part|floatformat:1}}%)&nbsp;{% endfor %}				
+		<li>{{group.name}} {{ group.credit_minus_debit|floatformat:2 }} (H:{{ group.credit|floatformat:2 }} S:{{ group.debit|floatformat:2 }}) &rArr;  {% for m in group.members %} {{m.name}}({{m.weight}}/{{group.sum}}={{m.part|floatformat:1}}%)&nbsp;{% endfor %}				
 		</li>
 		{% endfor %}
 	</ul>
