@@ -11,19 +11,11 @@ class AccessHandler(BaseRequestHandler):
 		self.updateproject()
 		action = self.request.get('action', 'list')
 		if action == 'invite':	
-			i = Invitation(project=self.project, user=users.User(email=self.request.get('email')), right=int(self.request.get('right')), code=random.randint(0, 2 << 31))
-			i.put()
-			message = mail.EmailMessage(sender=users.get_current_user().email(),
-										subject="Invitation to Urlaubsabrechnung")
-			message.to = i.user.email()
-			message.body = "Hallo!\n\nDu bist eingeladen die Abrechnung fuer %(projectname)s anzusehen.\n\n" \
-			"Bitte melde dich unter\nhttp://urlaubsabrechnung.appspot.com/join?project=%(project)s&invitation=%(invitation)s&code=%(code)d"\
-			"\nmit einem google account an.!" % {
-													'projectname':  self.project.name,
-													'invitation':  i.key(),
-													'project': self.project.key(),
-													'code': i.code
-												}
+			invitation = Invitation(project=self.project, user=users.User(email=self.request.get('email')), right=int(self.request.get('right')), code=random.randint(0, 2 << 31))
+			invitation.put()
+			message = mail.EmailMessage(sender=users.get_current_user().email(), subject="Einladung Urlaubsabrechnung")
+			message.to = invitation.user.email()
+			message.html = self.render('invite_mail_en.html', { 'invitation': invitation })
 			message.send()
 			# generate std output
 			self.generate('access', {
@@ -32,7 +24,7 @@ class AccessHandler(BaseRequestHandler):
 			})
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
-
+		
 	@login_required
 	def	get(self):
 		self.updateproject()
