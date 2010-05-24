@@ -26,8 +26,10 @@ class AccessHandler(BaseRequestHandler):
 												}
 			message.send()
 			# generate std output
-			self.get()
-			
+			self.generate('access', {
+					'rights': self.project.projectrights_set,
+					'invitations': self.project.invitation_set,
+			})
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 
