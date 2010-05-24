@@ -13,8 +13,9 @@ class BaseRequestHandler(webapp.RequestHandler):
 	the current user in the 'user' variable and the current webapp request
 	in the 'request' variable.
 	"""
-	def generate(self, template_name, template_values={})
+	def generate(self, template_name, template_values={}):
 		self.response.out.write(self.render(template_name+'_en.html', template_values))
+		pass
 		
 	"""Supplies a common template render function. """
 	def render(self, template_name, template_values={}):
