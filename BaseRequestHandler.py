@@ -13,7 +13,11 @@ class BaseRequestHandler(webapp.RequestHandler):
 	the current user in the 'user' variable and the current webapp request
 	in the 'request' variable.
 	"""
-	def generate(self, template_name, template_values={}):
+	def generate(self, template_name, template_values={})
+		self.response.out.write(self.render(template_name+'_en.html', template_values))
+		
+	"""Supplies a common template render function. """
+	def render(self, template_name, template_values={}):
 		if 'project' not in self.__dict__:
 			self.project = None
 		values = {
@@ -28,9 +32,9 @@ class BaseRequestHandler(webapp.RequestHandler):
 			values['project_key'] = self.project.key()
 		values.update(template_values)
 		directory = os.path.dirname(__file__)
-		path = os.path.join(directory, os.path.join('templates', template_name + '_en.html'))
-		self.response.out.write(template.render(path, values, debug=True))
-		
+		path = os.path.join(directory, os.path.join('templates', template_name))
+		return template.render(path, values, debug=True)
+	
 	"""(OBSOLETE) use @login instead! Checks, if a user is logged on, redirects to login page """
 	def checklogin(self):
 		if not users.GetCurrentUser():
