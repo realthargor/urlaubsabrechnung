@@ -27,7 +27,13 @@
         <div class="attribution">
 			{{ project.name }}
         </div>
-        <div class="buttons">{% block buttons %}{% endblock %}</div>
+        <div class="buttons">
+	        {% block buttons %}
+	        {% endblock %}
+			<span class="item">
+				<input type="button" onclick="location.href='/help?project={{ project_key }}'" value="Hilfe"/>
+			</span>
+        </div>
         <div style="clear: both"></div>
       </div>
     </div>

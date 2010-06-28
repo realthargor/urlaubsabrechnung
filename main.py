@@ -9,6 +9,7 @@ from CurrenciesHandler import CurrenciesHandler
 from AccountsHandler import AccountsHandler
 from AccessHandler import AccessHandler
 from JoinHandler import JoinHandler
+from HelpHandler import HelpHandler
 
 # ******************************************************************************
 # ** URL Mapping and MAIN routine **********************************************
@@ -21,6 +22,7 @@ application = webapp.WSGIApplication([
   ('/accounts'		, AccountsHandler),
   ('/access'		, AccessHandler),
   ('/join'			, JoinHandler),
+  ('/help'          , HelpHandler),
  ], debug=True)
 
 def main():
