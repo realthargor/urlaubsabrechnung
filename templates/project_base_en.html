@@ -1,30 +1,24 @@
-﻿{% extends "base_en.html" %}
-
-{% block title %}
-	{{ application_name }}&nbsp;-&nbsp;{{ project.name }}
-{% endblock %}
+{% extends "base_en.html" %}
 
 {% block buttons %}
 <span class="item">
-	<input type="button" onclick="location.href='/'" value="Projektliste"/>
+	{%if project_list_enabled %}
+		<input type="button" onclick="location.href='/'" value="Projektliste"/>
+	{%endif%}
 	{%if project %}
-		{%if project.RightReport %}
-			<input type="button" onclick="location.href='/summary?project={{ project_key }}'" value="Report"/>
+		{%if project.RightView %}
+			<input type="button" onclick="location.href='/summary?project={{ accesss_key }}'" value="Report"/>
 		{%endif%}
-		{%if project.RightTransaction %}
-			<input type="button" onclick="location.href='/transactions?project={{ project_key }}'" value="Transaktionen"/>
+		{%if project.RightEdit %}
+			<input type="button" onclick="location.href='/transactions?project={{ accesss_key }}'" value="Transaktionen"/>
+			<input type="button" onclick="location.href='/accounts?project={{ accesss_key }}'" value="Konten"/>
+			<input type="button" onclick="location.href='/currencies?project={{ accesss_key }}'" value="Währungen"/>
 		{%endif%}
-		<input type="button" onclick="location.href='/accounts?project={{ project_key }}'" value="Konten"/>
-		<input type="button" onclick="location.href='/currencies?project={{ project_key }}'" value="Währungen"/>
-		<input type="button" onclick="location.href='/access?project={{ project_key }}'" value="Zugriff/Einladungen"/>
+		{%if project.RightManage %}			
+			<input type="button" onclick="location.href='/access?project={{ accesss_key }}'" value="Zugriff/Einladungen"/>
+		{%endif%}
 	{%endif%}
 </span>
-{% endblock %}
-
-{% block head %}
-<script type="text/javascript">
-	project_id = "{{ project_key }}";
-</script>
 {% endblock %}
 
 {% block body %}

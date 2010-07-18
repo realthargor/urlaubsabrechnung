@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-
-from models import Group, Member, Person, Account
+import models
+import Security
 from BaseRequestHandler import BaseRequestHandler
-from google.appengine.ext.webapp.util import login_required
 from django.utils import simplejson as json
 						
 class AccountsHandler(BaseRequestHandler):
@@ -16,16 +15,16 @@ class AccountsHandler(BaseRequestHandler):
 				else:
 					self.response.out.write('<option value="%(value)s">%(name)s</option>' % {'name':a.name, 'value':a.key()})
 		
+	@Security.ProjectAccess(Security.Right_Edit)
 	def	post(self):
-		self.updateproject()
 		action = self.request.get('action', 'list')		 
 		if action == 'list':
 			# select the class type we want to list
 			type = self.request.get('type', 'all')
 			if type == 'person': 
-				target_class = Person 
+				target_class = models.Person 
 			elif type == 'group':
-				target_class = Group
+				target_class = models.Group
 			else:
 				target_class = object
 			# create a list of options against all accounts
@@ -33,18 +32,18 @@ class AccountsHandler(BaseRequestHandler):
 		
 		elif action == 'member_remove':
 			# remove memberships
-			group = Group.get(self.request.get('group'))
+			group = models.Group.get(self.request.get('group'))
 			for member_key in json.loads(self.request.get('member_list')):
-				m = Member.get(member_key)
+				m = models.Member.get(member_key)
 				if m.group.key() == group.key():
 					m.delete()
 			# list members of a group
-			for member in Group.get(self.request.get('group')).member_set:
+			for member in models.Group.get(self.request.get('group')).member_set:
 				self.response.out.write('<option value="%(value)s">%(name)s: %(weight)f</option>' % {'name':member.person.name, 'value':member.key(), 'weight': member.weight })
 		
 		elif action == 'member_add':
 			# add or update memberships
-			group = Group.get(self.request.get('group'))
+			group = models.Group.get(self.request.get('group'))
 			member_weight = float(self.request.get('member_weight', '1'))
 			update_account_list = json.loads(self.request.get('account_key_list'))
 			# first update existing member weights
@@ -56,69 +55,69 @@ class AccountsHandler(BaseRequestHandler):
 					m.put()
 			# add new memberships for all remaining items
 			for a in update_account_list:
-				Member(project=self.project, group=group, weight=member_weight, person=Person.get(a)).put()
+				models.Member(project=self.project, group=group, weight=member_weight, person=models.Person.get(a)).put()
 			# delete all members with weight 0
-			for member in Group.get(self.request.get('group')).member_set:
+			for member in models.Group.get(self.request.get('group')).member_set:
 				if member.weight == 0:
 					member.delete()
 			# list members of a group
-			for member in Group.get(self.request.get('group')).member_set:
+			for member in models.Group.get(self.request.get('group')).member_set:
 				self.response.out.write('<option value="%(value)s">%(name)s: %(weight)f</option>' % {'name':member.person.name, 'value':member.key(), 'weight': member.weight })
 				
 		elif action == 'group_add':
 			# add a new group
 			newname = self.request.get('name')
 			self.project.CheckNewAccountName(newname)
-			group = Group(name=newname, project=self.project)
+			group = models.Group(name=newname, project=self.project)
 			group.put()
 			# list new remaining groups
-			self.listGroups(type=Group, default=group)
+			self.listGroups(type=models.Group, default=group)
 			
 		elif action == 'person_add':
 			# add a new person
 			newname = self.request.get('name')
 			self.project.CheckNewAccountName(newname)
-			person = Person(name=newname, project=self.project)
+			person = models.Person(name=newname, project=self.project)
 			person.put()
 			# list the persons
-			self.listGroups(type=Person, default=person)
+			self.listGroups(type=models.Person, default=person)
 			
 		elif action == 'person_remove':
 			# remove a list of persons
 			for person_key in json.loads(self.request.get('person_list')):
-				Account.get(person_key).delete()
+				models.Account.get(person_key).delete()
 			# list persons
-			self.listGroups(type=Person)
+			self.listGroups(type=models.Person)
 		
 		elif action == 'person_rename':
 			# rename an account
-			account = Account.get(self.request.get('account'));
+			account = models.Account.get(self.request.get('account'));
 			newname = self.request.get('name', account.name)
 			self.project.CheckNewAccountName(newname, account)
 			account.name = newname
 			account.put()
 			# list accounts
-			self.listGroups(type=Person, default=account)
+			self.listGroups(type=models.Person, default=account)
 
 		elif action == 'group_rename':
 			# rename an account
-			account = Account.get(self.request.get('account'));
+			account = models.Account.get(self.request.get('account'));
 			newname = self.request.get('name', account.name)
 			self.project.CheckNewAccountName(newname, account)
 			account.name = newname
 			account.put()
 			# list accounts
-			self.listGroups(type=Group, default=account)		
+			self.listGroups(type=models.Group, default=account)		
 			
 		elif action == 'group_remove':
 			# remove a group
-			Group.get(self.request.get('group')).delete();
+			models.Group.get(self.request.get('group')).delete();
 			# list remaining groups
-			self.listGroups(type=Group)
+			self.listGroups(type=models.Group)
 			
 		elif action == 'members':
 			# list members of a group
-			for member in Group.get(self.request.get('group')).member_set:
+			for member in models.Group.get(self.request.get('group')).member_set:
 				self.response.out.write('<option value="%(value)s">%(name)s: %(weight)f</option>' % {
 					'name':member.person.name,
 					'value':member.key(),
@@ -128,7 +127,6 @@ class AccountsHandler(BaseRequestHandler):
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 
-	@login_required
+	@Security.ProjectAccess(Security.Right_Edit)
 	def	get(self):
-		self.updateproject()
 		self.generate('accounts')

@@ -1,28 +1,7 @@
-{% extends "base_en.html" %}
-
-{% block buttons %}
-<span class="item">
-	{% if user %}		
-		<input type="button" onclick="location.href='/'" value="Projektliste"/>
-		{%if project %}
-			{%if project.RightReport %}
-				<input type="button" onclick="location.href='/summary?project={{ project_key }}'" value="Report"/>
-			{%endif%}
-			{%if project.RightTransaction %}
-				<input type="button" onclick="location.href='/transactions?project={{ project_key }}'" value="Transaktionen"/>
-			{%endif%}
-			<input type="button" onclick="location.href='/accounts?project={{ project_key }}'" value="Konten"/>
-			<input type="button" onclick="location.href='/currencies?project={{ project_key }}'" value="Währungen"/>
-			<input type="button" onclick="location.href='/access?project={{ project_key }}'" value="Zugriff/Einladungen"/>
-		{%endif%}
-	{%endif%}
-</span>
-{% endblock %}
-
+{% extends "project_base_en.html" %}
+{% block title %}Hilfe{% endblock %}
 {% block head %}
 <style type="text/css">
-  
-
 /* default css */
 
 table {

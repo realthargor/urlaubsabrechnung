@@ -2,9 +2,8 @@
 
 from models import Transaction, Account, Currency
 from BaseRequestHandler import BaseRequestHandler
-
-from google.appengine.ext.webapp.util import login_required
 from datetime import datetime
+import Security
 						
 class TransactionsHandler(BaseRequestHandler):
 	def sendTransactionList(self):
@@ -14,8 +13,8 @@ class TransactionsHandler(BaseRequestHandler):
 		})
 
 	# this handler handles all transaction transfer requests
+	@Security.ProjectAccess(Security.Right_Edit)
 	def	post(self):
-		self.updateproject()
 		action = self.request.get('action', 'list')
 		if action == 'list':
 			self.sendTransactionList()		
@@ -61,8 +60,7 @@ class TransactionsHandler(BaseRequestHandler):
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 	
 	# This handler shows the main transactions page
-	@login_required
+	@Security.ProjectAccess(Security.Right_Edit)
 	def	get(self):
-		self.updateproject()
 		self.generate('transactions')
 		

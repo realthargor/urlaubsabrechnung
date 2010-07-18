@@ -1,5 +1,7 @@
 {% extends "base_en.html" %}
 
+{% block title %}Projektliste{% endblock %}
+
 {% block head %}
 	<script type="text/javascript">
 		function project_DeleteClick(key)
@@ -47,13 +49,11 @@
 
 {% block buttons %}
 <span class="item">
-	<input type="button" onclick="location.href='/'" value="Projektliste"/>
 </span>
 {% endblock %}
 
 {% block body %}
 	{% if message %}{{ message }}{% endif %}
-	<h1>Meine Projekte</h1>
 	<ul>
 	{% for project in projects %}
 		<li>{{ project.name }} {{ project.rights }}
