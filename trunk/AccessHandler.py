@@ -37,7 +37,7 @@ class AccessHandler(BaseRequestHandler):
 				sender=self.user.email(), 
 				subject="Einladung " + self.project.display_name + " Urlaubsabrechung")
 			message.to = ticket.user.email()
-			message.html = self.render('invite_mail_en.html', { 'ticket': ticket })
+			message.html = self.render('ticket_mail_en.html', { 'ticket': ticket })
 			message.send()
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
@@ -50,6 +50,11 @@ class AccessHandler(BaseRequestHandler):
 		
 	@Security.ProjectAccess(Security.Right_Manage)
 	def	get(self):
+		if self.request.get('action', '') == 'delete_ticket' and self.request.get('ticket', '')!='':
+			ticket = models.Ticket.get(self.request.get('ticket', ''))
+			if ticket.project.key()!=self.project.key():
+				raise Exception("Unauthorized access!")
+			ticket.delete()
 		self.generate('access', {
 				'rights': self.project.projectrights_set,
 				'invitations': self.project.invitation_set,
