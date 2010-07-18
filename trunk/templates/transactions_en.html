@@ -1,127 +1,123 @@
-﻿{% extends "project_base_en.html" %}
-
-{% block head %}
-	<script type="text/javascript">
-		project_id = "{{ project_key }}";		
-		
-		function transaction_SubmitClick(event)
-		{
-			$('teditform').addClassName("hidden");
-			new Ajax.Request("/transactions", {   
-				method: 'post',
-				parameters: {
-					action: 'update', 
-					project: project_id, 
-					transaction: $F('transaction_key'),
-					date: $F('transaction_date'),
-					source: $F('transaction_source'),					
-					dest: $F('transaction_dest'),
-					ammount: $F('transaction_ammount'),
-					check: $F('transaction_check')!=null?"True":"False",
-					currency: $F('transaction_currency'),
-					text: $F('transaction_text')
-				},
-				onSuccess: function(transport) 
-				{ 
-					$('transactions').update(transport.responseText);
-					$$('tr.transaction').invoke('observe', 'click', transactionClick);
-				},
-				onFailure: function(transport)
-				{
-					alert(transport.responseText);
-				}
-			}); 
-			return false;
-		}
-		
-		function transaction_CloseClick(event) {
-			$('teditform').addClassName("hidden");
-			return false;
-		}
-		
-		function transaction_DeleteClick(event)
-		{
-			$('teditform').addClassName("hidden");
-			new Ajax.Request("/transactions", {   
-				method: 'post',
-				parameters: {
-					action: 'delete', 
-					project: project_id, 
-					transaction: $F('transaction_key')
-				},
-				onSuccess: function(transport) 
-				{ 
-					$('transactions').update(transport.responseText);
-					$$('tr.transaction').invoke('observe', 'click', transactionClick);
-				},
-				onFailure: function(transport)
-				{
-					alert(transport.responseText);
-				}
-			}); 
-			return false;
-		}
-		
-	  	function transactionClick(event)
-	  	{
-			var row = Event.element(event).parentNode;
-			var id = row.id;
-			var data = row.descendants();
-			var form = $('teditform');
-			form.removeClassName("hidden");
-			$('transaction_delete').removeClassName("hidden");
-			$('transaction_update').innerHTML = "Aktualisieren";
-			$('transaction_key').setValue(id);
-			$('transaction_date').setValue(data[0].innerHTML);
-			$('transaction_source').setValue(data[1].getAttribute('value'));
-			$('transaction_dest').setValue(data[2].getAttribute('value'));
-			$('transaction_ammount').setValue(data[3].innerHTML);
-			$('transaction_currency').setValue(data[4].getAttribute('value'));
-			$('transaction_text').setValue(data[5].innerHTML);
-			$('transaction_check').setValue(data[5].getAttribute('check')=="True"?"Check":null);
-			form.scrollTo();
-	  	}
-		
-	  	function transaction_NewClick(event)
-	  	{
-			var form = $('teditform');
-			form.removeClassName("hidden");
-			$('transaction_key').setValue("None");
-			$('transaction_ammount').setValue('0');
-			$('transaction_text').setValue('New...');
-			$('transaction_delete').addClassName("hidden");
-			$('transaction_update').innerHTML = "Hinzufügen";
-			form.scrollTo();
-	  	}
-		
-	  	// run some startup code
-		document.observe("dom:loaded", function ()
-		{  			
-			new Ajax.Request("/transactions", {   
-				method: 'post',   
-				parameters: { action: 'list', project: project_id },
-				onSuccess: function(transport) { 
-					$('transactions').update(transport.responseText);
-					$$('tr.transaction').invoke('observe', 'click', transactionClick);
-				}
-			} );
-			new Ajax.Request("/accounts", {   
-				method: 'post',   
-				parameters: { action: 'list', project: project_id },
-				onSuccess: function(transport) { 
-					$('transaction_source').update(transport.responseText); 
-					$('transaction_dest').update(transport.responseText); 
-				}
-			} );
-			new Ajax.Request("/currencies", {   
-				method: 'post',   
-				parameters: { action: 'list', project: project_id },
-				onSuccess: function(transport) { 
-					$('transaction_currency').update(transport.responseText); 
-				}
-			} );
-		});		
-	</script>
+{% extends "project_base_en.html" %}
+{% block title %}Transaktionen{% endblock %}
+{% block script %}
+	function transaction_SubmitClick(event)
+	{
+		$('teditform').addClassName("hidden");
+		new Ajax.Request("/transactions", {   
+			method: 'post',
+			parameters: {
+				action: 'update', 
+				project: project_id, 
+				transaction: $F('transaction_key'),
+				date: $F('transaction_date'),
+				source: $F('transaction_source'),					
+				dest: $F('transaction_dest'),
+				ammount: $F('transaction_ammount'),
+				check: $F('transaction_check')!=null?"True":"False",
+				currency: $F('transaction_currency'),
+				text: $F('transaction_text')
+			},
+			onSuccess: function(transport) 
+			{ 
+				$('transactions').update(transport.responseText);
+				$$('tr.transaction').invoke('observe', 'click', transactionClick);
+			},
+			onFailure: function(transport)
+			{
+				alert(transport.responseText);
+			}
+		}); 
+		return false;
+	}
+	
+	function transaction_CloseClick(event) {
+		$('teditform').addClassName("hidden");
+		return false;
+	}
+	
+	function transaction_DeleteClick(event)
+	{
+		$('teditform').addClassName("hidden");
+		new Ajax.Request("/transactions", {   
+			method: 'post',
+			parameters: {
+				action: 'delete', 
+				project: project_id, 
+				transaction: $F('transaction_key')
+			},
+			onSuccess: function(transport) 
+			{ 
+				$('transactions').update(transport.responseText);
+				$$('tr.transaction').invoke('observe', 'click', transactionClick);
+			},
+			onFailure: function(transport)
+			{
+				alert(transport.responseText);
+			}
+		}); 
+		return false;
+	}
+	
+  	function transactionClick(event)
+  	{
+		var row = Event.element(event).parentNode;
+		var id = row.id;
+		var data = row.descendants();
+		var form = $('teditform');
+		form.removeClassName("hidden");
+		$('transaction_delete').removeClassName("hidden");
+		$('transaction_update').innerHTML = "Aktualisieren";
+		$('transaction_key').setValue(id);
+		$('transaction_date').setValue(data[0].innerHTML);
+		$('transaction_source').setValue(data[1].getAttribute('value'));
+		$('transaction_dest').setValue(data[2].getAttribute('value'));
+		$('transaction_ammount').setValue(data[3].innerHTML);
+		$('transaction_currency').setValue(data[4].getAttribute('value'));
+		$('transaction_text').setValue(data[5].innerHTML);
+		$('transaction_check').setValue(data[5].getAttribute('check')=="True"?"Check":null);
+		form.scrollTo();
+  	}
+	
+  	function transaction_NewClick(event)
+  	{
+		var form = $('teditform');
+		form.removeClassName("hidden");
+		$('transaction_key').setValue("None");
+		$('transaction_ammount').setValue('0');
+		$('transaction_text').setValue('New...');
+		$('transaction_delete').addClassName("hidden");
+		$('transaction_update').innerHTML = "Hinzuf�gen";
+		form.scrollTo();
+  	}
+	
+  	// run some startup code
+	document.observe("dom:loaded", function ()
+	{  			
+		new Ajax.Request("/transactions", {   
+			method: 'post',   
+			parameters: { action: 'list', project: project_id },
+			onSuccess: function(transport) { 
+				$('transactions').update(transport.responseText);
+				$$('tr.transaction').invoke('observe', 'click', transactionClick);
+			}
+		} );
+		new Ajax.Request("/accounts", {   
+			method: 'post',   
+			parameters: { action: 'list', project: project_id },
+			onSuccess: function(transport) { 
+				$('transaction_source').update(transport.responseText); 
+				$('transaction_dest').update(transport.responseText); 
+			}
+		} );
+		new Ajax.Request("/currencies", {   
+			method: 'post',   
+			parameters: { action: 'list', project: project_id },
+			onSuccess: function(transport) { 
+				$('transaction_currency').update(transport.responseText); 
+			}
+		} );
+	});		
 {% endblock %}
 
 {% block body %}
@@ -129,7 +125,7 @@
 	<fieldset>
 		<legend>Transaktion</legend>
 		<input id="transaction_key" type="text" class="hidden" readonly="true" size="1" name="KEY" VALUE=""/>
-		<input id="project" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{ project_key }}"/>
+		<input id="project" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{ accesss_key }}"/>
 		<br/>
 		
 		<label for="transaction_date">Datum</label>
@@ -164,8 +160,6 @@
 		<button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_SubmitClick()">Aktualisieren</button>
 	</fieldset>
 </form>
-
-<h1>Transaktionen</h1>
 <button id="transaction_update" type="submit" name="Action" value="Update" onclick="transaction_NewClick()">Neue Transaktion...</button>
 <table class="smallFont">
 	<thead>

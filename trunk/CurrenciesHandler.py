@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from models import Currency
+import models
+import Security
 from BaseRequestHandler import BaseRequestHandler
-from google.appengine.ext.webapp.util import login_required
 								
 class CurrenciesHandler(BaseRequestHandler):
+	@Security.ProjectAccess(Security.Right_Edit)
 	def	post(self):
-		self.updateproject()
 		action = self.request.get('action', 'list')
 		if action == 'list':
 			# add base currency of project
@@ -25,13 +25,13 @@ class CurrenciesHandler(BaseRequestHandler):
 			if divisor < 0.01: raise Exception("Divisor must be greater or equal to 0.01")
 			factor = float(self.request.get('factor', '1'))
 			if factor < 0.01: raise Exception("Factor must be greater or equal to 0.01")
-			Currency(project=self.project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
+			models.Currency(project=self.project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
 			# generate std output
 			self.generate('currencies', {'currencies': self.project.currency_set })
 
 		elif action == 'delete':
 			# delete existing currency
-			c = Currency.get(self.request.get('key'))
+			c = models.Currency.get(self.request.get('key'))
 			for t in c.transaction_set:
 				t.delete()
 			c.delete()
@@ -40,7 +40,7 @@ class CurrenciesHandler(BaseRequestHandler):
 			
 		elif action == 'update':
 			# update existing currency
-			c = Currency.get(self.request.get('key'))
+			c = models.Currency.get(self.request.get('key'))
 			divisor = float(self.request.get('divisor', '1'))
 			if divisor < 0.01: raise Exception("Divisor must be greater or equal to 0.01")
 			factor = float(self.request.get('factor', '1'))
@@ -54,7 +54,6 @@ class CurrenciesHandler(BaseRequestHandler):
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 		
-	@login_required
-	def	get(self):
-		self.updateproject()
+	@Security.ProjectAccess(Security.Right_Edit)
+	def	get(self):		
 		self.generate('currencies', {'currencies': self.project.currency_set })

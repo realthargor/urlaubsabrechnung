@@ -1,17 +1,19 @@
-﻿{% extends "project_base_en.html" %}
+{% extends "project_base_en.html" %}
+
+{% block title %}Report{% endblock %}
 
 {% block head %}
     <link href="/static/css/TSorter_1.css" rel="stylesheet" type="text/css"/>
 	<script type="text/javascript" src="/static/javascript/TSorter_1.js"></script>
-	<script type="text/javascript">
-		project_id = "{{ project_key }}";		
-	  	// run some startup code
-		document.observe("dom:loaded", function ()
-		{  			
-			var transactionTableSorter = new TSorter;
-			transactionTableSorter.init('transactionTable');			
-		});		
-	</script>
+{% endblock %}
+
+{% block script %}
+  	// run some startup code
+	document.observe("dom:loaded", function ()
+	{  			
+		var transactionTableSorter = new TSorter;
+		transactionTableSorter.init('transactionTable');
+	});
 {% endblock %}
 
 
@@ -43,11 +45,6 @@
 	<table id="transactionTable" class="smallFont sortable">
 		<thead>
 			<tr>
-				<th colspan="5">&nbsp;</th>
-				<th colspan="{{result.accounts|length}}">Belastung</th>
-				<th colspan="1">&nbsp;</th>
-			</tr>
-			<tr>
 				<th class="sortable">Datum</th>
 				<th class="sortable">Was</th>
 				<th class="sortable" abbr="currency">Wert</th>
@@ -56,12 +53,11 @@
 				{% for person in project.persons.values %}
 					<th class="sortable" abbr="currency">{{person.name}}</th>
 				{% endfor %}
-				<th class="sortable" abbr="last_change">Letzte Änderung</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for t in project.transactions %}
-			<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}">
+			<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}" title="Letzte �nderung erfolgte am {{ t.lastmod|date:"Y-m-d" }} um {{ t.lastmod|time }} durch {{ t.user.nickname }}.">
 				<td>{{t.date|date:"Y-m-d"}}</td>
 				<td>{{t.text}}</td>
 				<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
@@ -77,8 +73,7 @@
 						<td></td>
 						{% endif %}
 					{% endif %}
-				{% endfor %}
-				<td style="font-size: 80%;">{{ t.lastmod|date:"Y-m-d" }} {{ t.lastmod|time }} by <a href="mailto:{{ t.user }}">{{ t.user }}</a></td>
+				{% endfor %}  					
 			</tr>
 			{% endfor %}
 		</tbody>
@@ -88,7 +83,6 @@
 				{% for person in project.persons.values %}
 					<td style="text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
 				{% endfor %}
-				<td/>
 			</tr>
 		</tfoot>
 	</table>
@@ -98,7 +92,7 @@
 		<li>{{group.name}} {{ group.credit_minus_debit|floatformat:2 }} (H:{{ group.credit|floatformat:2 }} S:{{ group.debit|floatformat:2 }}) &rArr;  {% for m in group.members %} {{m.name}}({{m.weight}}/{{group.sum}}={{m.part|floatformat:1}}%)&nbsp;{% endfor %}				
 		</li>
 		{% endfor %}
-	</ul>
+	</ul>	
 	<h3>Währungen</h3>
 	<ul>
 		{% for c in project.currency_set %}

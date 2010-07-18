@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from models import Project, ProjectRights
 from google.appengine.api import users
-
 from BaseRequestHandler import BaseRequestHandler
 
 from google.appengine.ext.webapp.util import login_required
@@ -9,8 +8,6 @@ from google.appengine.ext.webapp.util import login_required
 class ProjectsHandler(BaseRequestHandler):	
 	@login_required
 	def	get(self):
-		if self.checklogin():
-			return;
 		self.generate('projects', { 
 			'projects':  Project.list(),
 			'projectsAll': Project.listAll() if users.is_current_user_admin() else [],  
@@ -20,7 +17,6 @@ class ProjectsHandler(BaseRequestHandler):
 		if not users.GetCurrentUser():
 			self.response.out.write(users.CreateLoginURL("/"))
 			return;
-		self.updateproject()
 		action = self.request.get('action', 'add')
 		if action == 'add':
 			# create the project and return the new location to go to
