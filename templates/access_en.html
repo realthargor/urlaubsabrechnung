@@ -12,7 +12,10 @@
 	<h2>Anonyme Tickets</h2>
 	<ul>
 	{% for t in tickets %}
-		<li value="{{ t.key }}"><a href="/summary?project={{t.key}}_{{t.code}}">{{ t.user.nickname }} &rArr; {{ t.right }} (expires {{t.expires}})</a></li>
+		<li>
+			<a href="/summary?project={{t.key}}_{{t.code}}">{{ t.user.nickname }} &rArr; {{ t.right }} (expires {{t.expires}})</a>
+			&nbsp;<a href="/access?project={{accesss_key}}&action=delete_ticket&ticket={{ t.key }}">[delete]</a>
+		</li>
 	{% endfor %}
 	</ul>
 	<form action="/access?project={{accesss_key}}" method="post" enctype="multipart/form-data">

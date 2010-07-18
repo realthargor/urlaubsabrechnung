@@ -57,7 +57,7 @@
 		</thead>
 		<tbody>
 			{% for t in project.transactions %}
-			<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}" title="Letzte �nderung erfolgte am {{ t.lastmod|date:"Y-m-d" }} um {{ t.lastmod|time }} durch {{ t.user.nickname }}.">
+			<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}" title="Letzte Änderung erfolgte am {{ t.lastmod|date:"Y-m-d" }} um {{ t.lastmod|time }} durch {{ t.user.nickname }}.">
 				<td>{{t.date|date:"Y-m-d"}}</td>
 				<td>{{t.text}}</td>
 				<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
