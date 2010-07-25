@@ -35,6 +35,7 @@ class TransactionsHandler(BaseRequestHandler):
 			transaction.ammount = float(self.request.get('ammount', str(transaction.ammount)).replace(',', '.'))
 			transaction.check = self.request.get('check', 'False') == 'True'
 			transaction.text = self.request.get('text', transaction.text)
+			transaction.user = self.user
 			# a None currency means we use the base currency!
 			c = self.request.get('currency', transaction.currency and transaction.currency.key())
 			transaction.currency = Currency.get(c) if c != "None" else None

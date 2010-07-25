@@ -72,10 +72,10 @@ def ProjectAccess(requested_permission):
 					if self.project.rights < requested_permission:
 						raise Exception("Permission denied!")
 				handler_method(self, *args)
-			except Exception as exception: 
+			except (Exception), e:
 				self.response.clear()
 				self.response.set_status(400)
-				self.response.out.write(exception.message)
+				self.response.out.write(e)
 			pass										
 		return check_login
 	return wrapper 
