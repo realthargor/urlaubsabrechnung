@@ -25,7 +25,9 @@
 			},
 			onFailure: function(transport)
 			{
-				alert(transport.responseText);
+				$('teditform').removeClassName("hidden");
+				$('transaction_edit_error').update(transport.responseText);
+				$('transaction_edit_error').removeClassName("hidden");
 			}
 		}); 
 		return false;
@@ -65,6 +67,7 @@
 		var id = row.id;
 		var data = row.descendants();
 		var form = $('teditform');
+		$('transaction_edit_error').addClassName("hidden");
 		form.removeClassName("hidden");
 		$('transaction_delete').removeClassName("hidden");
 		$('transaction_update').innerHTML = "Aktualisieren";
@@ -81,6 +84,7 @@
 	
   	function transaction_NewClick(event)
   	{
+		$('transaction_edit_error').addClassName("hidden");
 		var form = $('teditform');
 		form.removeClassName("hidden");
 		$('transaction_key').setValue("None");
@@ -123,14 +127,16 @@
 {% block body %}
 <form id="teditform" enctype="multipart/form-data" class="hidden transaction" onsubmit="return false;">
 	<fieldset>
+		<div id="transaction_edit_error" class="hidden error">Error message!</div><br/>
 		<legend>Transaktion</legend>
 		<input id="transaction_key" type="text" class="hidden" readonly="true" size="1" name="KEY" VALUE=""/>
 		<input id="project" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{ accesss_key }}"/>
 		<br/>
 		
 		<label for="transaction_date">Datum</label>
-		<input id="transaction_date" type="text" readonly="true" name="TEXT" size="10" VALUE=""/>
+		<input id="transaction_date" type="text" readonly="true" name="TEXT" size="10" VALUE="{% now "Y-m-d" %}"/>
 		<input type=button value="..." onclick="displayDatePicker('transaction_date', false, 'ymd', '-');">
+		<input type=button value="today" onclick="$('transaction_date').setValue('{% now "Y-m-d" %}');">
 		<br/>
 
 					

@@ -20,15 +20,16 @@
     <div id="header">
       <div class="top">
         <div class="login">
-          {% if user %}            
-			{%if project_list_enabled %}
+		{%if direct_link %}
+			Anonym als <span class="item nickname">{{ user.nickname }}</span> | 
+			<span class="item"><a href="/">Urlaubsabrechung Hauptseite</a></span>
+		{% else %}
+			{% if user %}            
 				<span class="item nickname">{{ user.nickname }}</span> | <span class="item"><a href="{{ logout_url|escape }}">Abmelden</a></span>
-            {%else%}
-				Anonym als <span class="item nickname">{{ user.nickname }}</span> | <span class="item"><a href="{{ login_url|escape }}">Anmelden</a></span>
-            {%endif%}
-          {% else %}
-            <span class="item"><a href="{{ login_url|escape }}">Anmelden</a></span>
-          {% endif %}
+			{%else%}
+				<span class="item"><a href="{{ login_url|escape }}">Anmelden</a></span>
+			{%endif%}
+		{% endif %}
         </div>
         <a href="/"><div class="logo">Urlaubsabrechnung{%if project %}, Projekt: "{{ project.display_name }}"{%endif%}&nbsp;-&nbsp;{% block title %}{% endblock %}</div></a>
       </div>

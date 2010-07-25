@@ -2,7 +2,9 @@
 
 {% block buttons %}
 <span class="item">
-	{%if project_list_enabled %}
+	{%if direct_link %}
+		<input type="button" onclick="location.href='/'" value="Startseite"/>
+	{%else%}
 		<input type="button" onclick="location.href='/'" value="Projektliste"/>
 	{%endif%}
 	{%if project %}

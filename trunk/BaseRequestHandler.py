@@ -20,15 +20,15 @@ class BaseRequestHandler(webapp.RequestHandler):
 	def render(self, template_name, template_values={}):
 		if 'user' not in self.__dict__:
 			self.user = users.GetCurrentUser()			
-		if 'project_list_enabled' not in self.__dict__:
-			self.project_list_enabled = self.user!=None
+		if 'direct_link' not in self.__dict__:
+			self.direct_link = False
 		if 'project' not in self.__dict__:
 			self.project = None
 		if 'accesss_key' not in self.__dict__:
 			self.accesss_key = None
 		
 		values = {
-		  'project_list_enabled': self.project_list_enabled,
+		  'direct_link': self.direct_link,
 		  'accesss_key': self.accesss_key,
 		  'request': self.request,
 		  'user': self.user,
@@ -44,5 +44,4 @@ class BaseRequestHandler(webapp.RequestHandler):
 	def _handle_exception(self, exception, debug_mode):
 		self.response.clear()
 		self.response.set_status(400)
-		self.response.out.write('<p>%(message)s</p>' % {'message':str(exception)})
-	
+		self.response.out.write(exception.message)	

@@ -76,6 +76,10 @@ tr.transaction{
 	display:none;
 }
 
+.error {
+	color: red
+}
+
 tr.check {
    background-color:yellow;
 }
