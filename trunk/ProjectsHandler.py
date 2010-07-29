@@ -2,6 +2,7 @@
 from models import Project, ProjectRights
 from google.appengine.api import users
 from BaseRequestHandler import BaseRequestHandler
+import Security
 
 from google.appengine.ext.webapp.util import login_required
 											
@@ -23,7 +24,7 @@ class ProjectsHandler(BaseRequestHandler):
 			project = Project(name=self.request.get('name'), currency=self.request.get('currency'))
 			project.put()
 			# add access rights for this user to the new project
-			rights = ProjectRights(project=project, user=users.GetCurrentUser(), right=255)
+			rights = ProjectRights(project=project, user=users.GetCurrentUser(), right=Security.Right_Owner)
 			rights.put()
 			# redirect to summary
 			self.response.out.write("/summary?project=%(key)s" % {'key':project.key()})
