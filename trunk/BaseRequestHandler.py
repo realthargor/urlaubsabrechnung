@@ -24,12 +24,12 @@ class BaseRequestHandler(webapp.RequestHandler):
 			self.direct_link = False
 		if 'project' not in self.__dict__:
 			self.project = None
-		if 'accesss_key' not in self.__dict__:
-			self.accesss_key = None
+		if 'access_key' not in self.__dict__:
+			self.access_key = None
 		
 		values = {
 		  'direct_link': self.direct_link,
-		  'accesss_key': self.accesss_key,
+		  'access_key': self.access_key,
 		  'request': self.request,
 		  'user': self.user,
 		  'login_url': users.CreateLoginURL(self.request.uri),

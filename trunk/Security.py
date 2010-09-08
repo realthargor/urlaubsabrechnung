@@ -23,8 +23,8 @@ def ProjectAccess(requested_permission):
 					self.project = None
 					self.user = users.get_current_user()			
 					# a project key is required
-					self.accesss_key = self.request.get('project', '')		
-					if self.accesss_key == '':
+					self.access_key = self.request.get('project', '')		
+					if self.access_key == '':
 						# no project is specified redirect to main url
 						if requested_permission > Right_None:
 							self.redirect("/")
@@ -32,7 +32,7 @@ def ProjectAccess(requested_permission):
 					else:			
 						# first we check if the project key is a  "anonymous" ticket, we use this as
 						# we can see this, by splitting the project key at '_'
-						ticket_data = self.accesss_key.split('_', 2)
+						ticket_data = self.access_key.split('_', 2)
 						# direct link is set to true, whenever there is a direct link to a specific project
 						self.direct_link = len(ticket_data) == 2
 						if self.direct_link:
@@ -45,12 +45,12 @@ def ProjectAccess(requested_permission):
 							self.user = ticket.user
 							self.project.local_name = ticket.local_name
 						else:					
-							self.project = models.Project.get(self.accesss_key)
+							self.project = models.Project.get(self.access_key)
 							# now we need login information to check any further rights
 							self.user = users.get_current_user()
 							if not self.user:
 								# we are not logged in -> redirect to login URI, but append project if the method has been other than get
-								self.redirect(users.create_login_url(self.request.uri + ("?project=" + self.accesss_key if self.request.method != 'GET' else '')))
+								self.redirect(users.create_login_url(self.request.uri + ("?project=" + self.access_key if self.request.method != 'GET' else '')))
 								return
 							# we are logged in query for user project settings
 							settings = models.ProjectRights.gql("WHERE user=:user and project=:project", user=self.user, project=self.project).get();
@@ -59,7 +59,7 @@ def ProjectAccess(requested_permission):
 							self.project.local_name = settings.local_name if settings else None;
 				except Exception:
 					self.direct_link = False
-					self.accesss_key = None
+					self.access_key = None
 					self.user = None
 					self.generate("no_access", {
 		  				'login_url': users.CreateLoginURL("/"),

@@ -14,11 +14,11 @@
 	{% for t in tickets %}
 		<li>
 			<a href="/summary?project={{t.key}}_{{t.code}}">{{ t.user.nickname }} &rArr; {{ t.right }} (expires {{t.expires}})</a>
-			&nbsp;<a href="/access?project={{accesss_key}}&action=delete_ticket&ticket={{ t.key }}">[delete]</a>
+			&nbsp;<a href="/access?project={{access_key}}&action=delete_ticket&ticket={{ t.key }}">[delete]</a>
 		</li>
 	{% endfor %}
 	</ul>
-	<form action="/access?project={{accesss_key}}" method="post" enctype="multipart/form-data">
+	<form action="/access?project={{access_key}}" method="post" enctype="multipart/form-data">
 		Emailadresse
 		<input type="text" name="email" size="20" value=""/>
 		<input type="hidden" name="right" size="2" value="200"/>
@@ -33,7 +33,7 @@
 		</ul>
 	{% endif %}
 	<h2>Einladungen versenden</h2>
-	<form action="/access?project={{accesss_key}}" method="post" enctype="multipart/form-data">
+	<form action="/access?project={{access_key}}" method="post" enctype="multipart/form-data">
 		Emailadresse
 		<input type="text" name="email" size="20" value=""/>
 		<input type="hidden" name="right" size="2" value="200"/>
