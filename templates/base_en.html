@@ -11,7 +11,7 @@
     {% block head %}{% endblock %}
 	<script type="text/javascript">
 		{%if project %}
-		project_id = "{{ accesss_key }}";
+		project_id = "{{ access_key }}";
 		{%endif%}
 	    {% block script %}{% endblock %}
     </script>
@@ -41,7 +41,7 @@
 	        {% block buttons %}
 	        {% endblock %}
 			<span class="item">
-				<input type="button" onclick="location.href='/help?project={{ accesss_key }}'" value="Hilfe"/>
+				<input type="button" onclick="location.href='/help?project={{ access_key }}'" value="Hilfe"/>
 			</span>
         </div>
         <div style="clear: both"></div>
