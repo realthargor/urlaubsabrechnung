@@ -48,6 +48,7 @@
 				<th class="sortable">Datum</th>
 				<th class="sortable">Was</th>
 				<th class="sortable" abbr="currency">Wert</th>
+				<th class="sortable" abbr="currency">{{project.currency}} Wert</th>
 				<th class="sortable">Von</th>
 				<th class="sortable">An</th>
 				{% for person in project.persons.values %}
@@ -61,6 +62,7 @@
 				<td>{{t.date|date:"Y-m-d"}}</td>
 				<td>{{t.text}}</td>
 				<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
+				<td style="text-align:right;">{{t.AmountBase|floatformat:2}}{{project.currency}}</td>
 				<td>{{t.source.name}}</td>
 				<td>{{t.dest.name}}</td>
 				{% for v in t.affected %}
@@ -79,7 +81,7 @@
 		</tbody>
 		<tfoot>
 			<tr class="results">
-				<td colspan="5">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
+				<td colspan="6">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
 				{% for person in project.persons.values %}
 					<td style="text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
 				{% endfor %}
