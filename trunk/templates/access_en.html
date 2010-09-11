@@ -21,7 +21,12 @@
 	<form action="/access?project={{access_key}}" method="post" enctype="multipart/form-data">
 		Emailadresse
 		<input type="text" name="email" size="20" value=""/>
-		<input type="hidden" name="right" size="2" value="200"/>
+		<select name="right">
+			<option 		  value="100">Nur lesen</option>
+			<option selected  value="200">Bearbeiten</option>
+			<option 		  value="500">Verwalten</option>
+			<option 		 value="1000">Eigner</option>
+		</select>
 		<input type="Submit" name="action" value="create_ticket"/>
 	</form>
 	{% if  invitations %}
@@ -36,7 +41,12 @@
 	<form action="/access?project={{access_key}}" method="post" enctype="multipart/form-data">
 		Emailadresse
 		<input type="text" name="email" size="20" value=""/>
-		<input type="hidden" name="right" size="2" value="200"/>
+		<select name="right">
+			<option 		  value="100">Nur lesen</option>
+			<option selected  value="200">Bearbeiten</option>
+			<option 		  value="500">Verwalten</option>
+			<option 		 value="1000">Eigner</option>
+		</select>
 		<input type="Submit" name="action" value="invite"/>
 	</form>
 {% endblock %}

@@ -1,0 +1,4 @@
+cron:
+- description: monthly project cleanup
+  url: /cron/deleteprojects
+  schedule: every month

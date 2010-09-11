@@ -10,9 +10,11 @@ from google.appengine.api import mail
 class AccessHandler(BaseRequestHandler):
 	@Security.ProjectAccess(Security.Right_Manage)
 	def	post(self):
-		action = self.request.get('action', '')
+		action = self.request.get('action', '')		
 		if action == 'invite':
-			invitation = models.Invitation(
+			if len(self.request.get('email', ''))<2:
+				raise Exception("Specify email!")
+			invitation = models.Invitation(				
 				   project=self.project, 
 				   user=users.User(email=self.request.get('email')), 
 				   right=min(int(self.request.get('right')),self.project.rights), 
@@ -25,6 +27,8 @@ class AccessHandler(BaseRequestHandler):
 			message.html = self.render('invite_mail_en.html', { 'invitation': invitation })
 			message.send()
 		elif action == "create_ticket":
+			if len(self.request.get('email', ''))<2:
+				raise Exception("Specify email!")
 			ticket = models.Ticket(
 				project=self.project, 
 				user=users.User(email=self.request.get('email')), 
