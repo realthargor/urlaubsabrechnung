@@ -113,7 +113,9 @@ class Project(db.Model):
             group.credit_minus_debit = group.credit - group.debit
         # PERSONS
         for person in self.persons.values():
-            person.group_part = person.sum - (person.credit - person.debit)
+			person.sum_negative = person.sum<=-0.005
+			person.sum_positive = person.sum>=+0.005
+			person.group_part = person.sum - (person.credit - person.debit)
                     
 class Account(polymodel.PolyModel):
     name = db.StringProperty(required=True)

@@ -47,7 +47,7 @@
 			<tr>
 				<th class="sortable">Datum</th>
 				<th class="sortable">Was</th>
-				<th class="sortable" abbr="currency">Wert</th>
+				<th class="sortable" abbr="currency">Betrag</th>
 				<th class="sortable" abbr="currency">{{project.currency}} Wert</th>
 				<th class="sortable">Von</th>
 				<th class="sortable">An</th>
@@ -83,7 +83,15 @@
 			<tr class="results">
 				<td colspan="6">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
 				{% for person in project.persons.values %}
-					<td style="text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
+					{%if person.sum_negative %}
+						<td style="color: red; text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
+					{%else%}
+						{%if person.sum_positive %}
+							<td style="color: black; text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
+						{%else%}
+							<td></td>
+						{% endif %}
+					{% endif %}
 				{% endfor %}
 			</tr>
 		</tfoot>
