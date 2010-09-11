@@ -56,9 +56,16 @@
 	{% if message %}{{ message }}{% endif %}
 	<ul>
 	{% for project in projects %}
-		<li>{{ project.name }} {{ project.rights }}
+		<li>{{ project.name }}
 			<a href="/summary?project={{ project.key }}">[Report]</a>&nbsp;
-			<a href="/transactions?project={{ project.key }}">[Transaktionen]</a>&nbsp;
+			{%if project.RightEdit %}
+				<a href="/transactions?project={{ project.key }}">[Transaktionen]</a>&nbsp;
+				<a href="/accounts?project={{ project.key }}">[Konten]</a>&nbsp;
+				<a href="/currencies?project={{ project.key }}">[Währungen]</a>&nbsp;
+			{%endif%}
+			{%if project.RightManage %}			
+				<a href="/access?project={{ project.key }}">[Zugriff/Einladungen]</a>&nbsp;			
+			{%endif%}
 			<button id="project_add" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.key }}')">Projekt aus meiner Liste entfernen</button>
 		</li>
 	{% endfor %}	
