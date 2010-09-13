@@ -6,5 +6,5 @@ Since the project is pretty new. Many features wishes seem very basic, so this l
 
 
 = Details =
-  * provide background cron job, that deletes unreferenced projects after a while
+  * delete access rights
   
