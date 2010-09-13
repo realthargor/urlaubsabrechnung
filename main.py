@@ -10,19 +10,21 @@ from AccountsHandler import AccountsHandler
 from AccessHandler import AccessHandler
 from JoinHandler import JoinHandler
 from HelpHandler import HelpHandler
+from ProjectSettingsHandler import ProjectSettingsHandler
 
 # ******************************************************************************
 # ** URL Mapping and MAIN routine **********************************************
 # ******************************************************************************
 application = webapp.WSGIApplication([
-  ('/'				, ProjectsHandler),
-  ('/summary'		, SummaryHandler),
-  ('/transactions'	, TransactionsHandler),
-  ('/currencies'	, CurrenciesHandler),
-  ('/accounts'		, AccountsHandler),
-  ('/access'		, AccessHandler),
-  ('/join'			, JoinHandler),
-  ('/help'          , HelpHandler),
+  ('/'						, ProjectsHandler),
+  ('/summary'				, SummaryHandler),
+  ('/transactions'			, TransactionsHandler),
+  ('/currencies'			, CurrenciesHandler),
+  ('/projectsettings'		, ProjectSettingsHandler),  
+  ('/accounts'				, AccountsHandler),
+  ('/access'				, AccessHandler),
+  ('/join'					, JoinHandler),
+  ('/help'          		, HelpHandler),
  ], debug=True)
 
 def main():
