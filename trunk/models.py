@@ -18,8 +18,10 @@ class Project(db.Model):
     def list():
         projects = []
         for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user()):
-            right.project.rights = right.right            
-            projects.append(right.project)
+			right.project.rights = right.right
+			# append users display name
+			right.project.display_name = right.local_name + " (" +  right.project.name + ")" if right.local_name and right.local_name != '' else right.project.name
+			projects.append(right.project)
         return projects
     
     """ returns all list of ALL projects """
@@ -221,7 +223,7 @@ class Transaction(db.Model):
         return balance
 
 class ProjectRights(db.Model):
-    project = db.ReferenceProperty(Project, required=True) #@IndentOk
+    project = db.ReferenceProperty(Project, required=True)
     user = db.UserProperty(required=True)
     right = db.IntegerProperty()
     local_name = db.StringProperty(default="")

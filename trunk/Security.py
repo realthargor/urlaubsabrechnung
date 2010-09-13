@@ -9,6 +9,7 @@ from datetime import datetime
 import models
 
 Right_None = 0
+Right_Minimum = 1
 Right_View = 100
 Right_Edit = 200
 Right_Manage = 500
@@ -23,7 +24,7 @@ def ProjectAccess(requested_permission):
 					self.project = None
 					self.user = users.get_current_user()			
 					# a project key is required
-					self.access_key = self.request.get('project', '')		
+					self.access_key = self.request.get('project', '')
 					if self.access_key == '':
 						# no project is specified redirect to main url
 						if requested_permission > Right_None:
@@ -44,6 +45,7 @@ def ProjectAccess(requested_permission):
 							self.project.rights = ticket.right
 							self.user = ticket.user
 							self.project.local_name = ticket.local_name
+							self.project.settings = ticket
 						else:					
 							self.project = models.Project.get(self.access_key)
 							# now we need login information to check any further rights
@@ -57,6 +59,7 @@ def ProjectAccess(requested_permission):
 							self.project.rights = Right_Admin if users.is_current_user_admin() else settings.right if settings else Right_None
 							# replace project name with local name				
 							self.project.local_name = settings.local_name if settings else None;
+							self.project.settings = settings
 				except Exception:
 					self.direct_link = False
 					self.access_key = None

@@ -19,6 +19,9 @@
 		{%if project.RightManage %}			
 			<input type="button" onclick="location.href='/access?project={{ access_key }}'" value="Zugriff/Einladungen"/>
 		{%endif%}
+		{%if project.RightView %}
+			<input type="button" onclick="location.href='/projectsettings?project={{ access_key }}'" value="Einstellungen"/>
+		{%endif%}
 	{%endif%}
 </span>
 {% endblock %}

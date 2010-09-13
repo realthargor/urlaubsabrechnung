@@ -1,4 +1,5 @@
 cron:
-- description: monthly project cleanup
+- description: delete abandoned projects every 30 days
   url: /cron/deleteprojects
-  schedule: every month
+  schedule: every day 00:00
+  timezone: Germany/Berlin
