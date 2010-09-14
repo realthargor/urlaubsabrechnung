@@ -7,19 +7,21 @@ import Security
 from google.appengine.ext.webapp.util import login_required
 											
 class ProjectsHandler(BaseRequestHandler):	
-	@login_required
+	@Security.ProjectAccess(Security.Right_None)
 	def	get(self):
 		self.generate('projects', { 
 			'projects':  Project.list(),
 			'projectsAll': Project.listAll() if users.is_current_user_admin() else [],  
 		})
 	
+	@Security.ProjectAccess(Security.Right_None)
 	def	post(self):
-		if not users.GetCurrentUser():
-			self.response.out.write(users.CreateLoginURL("/"))
-			return;
 		action = self.request.get('action', 'add')
 		if action == 'add':
+			if len(self.request.get('name'))<2:
+				raise Exception("project name must be at least 2 characters long")
+			if len(self.request.get('currency'))<1:
+				raise Exception("project currency must be at least one character long")
 			# create the project and return the new location to go to
 			project = Project(name=self.request.get('name'), currency=self.request.get('currency'))
 			project.put()
