@@ -75,23 +75,27 @@
 				<button id="project_remove" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.key }}')">Projekt aus meiner Liste entfernen</button>
 			{%endif%}
 		</li>
-	{% endfor %}	
+	{% endfor %}
 	</ul>
-	<form id="newProjectForm" enctype="multipart/form-data" onsubmit="return false;">
-		<fieldset>
-			<legend>Neues Projekt anlegen...</legend>
-			<label for="project_name">Name</label>
-			<input id="project_name" type="text" name="TEXT" size="20" VALUE=""/>
-			<br/>
-						
-			<label for="project_currency">Grundwährung</label>
-			<input id="project_currency" type="text" name="TEXT" size="5" VALUE="€"/>
-			<br/>
-						
-			<label for="project_add">Projekt</label>
-			<button id="project_add" type="submit" name="Action" value="Add" onclick="project_AddClick()">Erstellen...</button>
-		</fieldset>
-	</form>
+	{%if user %}
+		<form id="newProjectForm" enctype="multipart/form-data" onsubmit="return false;">
+			<fieldset>
+				<legend>Neues Projekt anlegen...</legend>
+				<label for="project_name">Name</label>
+				<input id="project_name" type="text" name="TEXT" size="20" VALUE=""/>
+				<br/>
+							
+				<label for="project_currency">Grundwährung</label>
+				<input id="project_currency" type="text" name="TEXT" size="5" VALUE="€"/>
+				<br/>
+							
+				<label for="project_add">Projekt</label>
+				<button id="project_add" type="submit" name="Action" value="Add" onclick="project_AddClick()">Erstellen...</button>
+			</fieldset>
+		</form>
+	{%else%}
+	<p>Um die Urlaubsabrechnung nutzen zu können, musst Du Dich <a href="{{ login_url|escape }}">anmelden</a>!</p>
+	{%endif%}
 	{% if projectsAll %}
 	<h1>Andere Projekte</h1>
 		{% for project in projectsAll %}
