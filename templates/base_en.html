@@ -41,7 +41,7 @@
 	        {% block buttons %}
 	        {% endblock %}
 			<span class="item">
-				<input type="button" onclick="location.href='/help?project={{ access_key }}'" value="Hilfe"/>
+				<input type="button" onclick="location.href='/help{%if project%}?project={{access_key}}{%endif%}'" value="Hilfe"/>
 			</span>
         </div>
         <div style="clear: both"></div>

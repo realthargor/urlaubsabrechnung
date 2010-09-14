@@ -69,7 +69,11 @@
 			{%if project.RightView %}
 				<a href="/projectsettings?project={{ project.key }}">[Einstellungen]</a>&nbsp;
 			{%endif%}
-			<button id="project_remove" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.key }}')">Projekt aus meiner Liste entfernen</button>
+			{%if project.last_access %}
+				<button id="project_remove" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.key }}')">Projekt löschen</button>
+			{%else%}
+				<button id="project_remove" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ project.key }}')">Projekt aus meiner Liste entfernen</button>
+			{%endif%}
 		</li>
 	{% endfor %}	
 	</ul>

@@ -18,10 +18,14 @@ class Project(db.Model):
     def list():
         projects = []
         for right in ProjectRights.gql("WHERE user=:user AND right>0", user=users.get_current_user()):
-			right.project.rights = right.right
+			# get project
+			project = right.project
+			project.rights = right.right
+			# calculate remaining number of owners
+			project.last_access = project.projectrights_set.count()<2
 			# append users display name
-			right.project.display_name = right.local_name + " (" +  right.project.name + ")" if right.local_name and right.local_name != '' else right.project.name
-			projects.append(right.project)
+			project.display_name = right.local_name + " (" +  project.name + ")" if right.local_name and right.local_name != '' else project.name
+			projects.append(project)
         return projects
     
     """ returns all list of ALL projects """
