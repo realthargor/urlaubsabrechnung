@@ -1,50 +1,58 @@
 {% extends "base_en.html" %}
 
-{% block title %}Projektliste{% endblock %}
+{% block title %}
+	{%if user %}
+		Projektliste
+	{%else%}
+		Startseite
+	{%endif%}
+{% endblock %}
 
 {% block head %}
-	<script type="text/javascript">
-		function project_DeleteClick(key)
-		{
-			new Ajax.Request("/", {   
-				method: 'post',
-				parameters: {
-					action: 'delete', 
-					project: key,
-				},
-				onSuccess: function(transport) 
-				{ 
-					location.href=transport.responseText;
-				},
-				onFailure: function(transport)
-				{
-					alert(transport.responseText);
-				}
-			}); 
-			return false;
-		}
-		
-		function project_AddClick(event)
-		{
-			new Ajax.Request("/", {   
-				method: 'post',
-				parameters: {
-					action: 'add', 
-					name: $F('project_name'),
-					currency: $F('project_currency'),					
-				},
-				onSuccess: function(transport) 
-				{ 
-					location.href=transport.responseText;
-				},
-				onFailure: function(transport)
-				{
-					alert(transport.responseText);
-				}
-			}); 
-			return false;
-		}
-	</script>
+	{%if user %}
+		<script type="text/javascript">
+			function project_DeleteClick(key)
+			{
+				new Ajax.Request("/", {   
+					method: 'post',
+					parameters: {
+						action: 'delete', 
+						project: key,
+					},
+					onSuccess: function(transport) 
+					{ 
+						location.href=transport.responseText;
+					},
+					onFailure: function(transport)
+					{
+						alert(transport.responseText);
+					}
+				}); 
+				return false;
+			}
+			
+			function project_AddClick(event)
+			{
+				new Ajax.Request("/", {   
+					method: 'post',
+					parameters: {
+						action: 'add', 
+						name: $F('project_name'),
+						currency: $F('project_currency'),					
+					},
+					onSuccess: function(transport) 
+					{ 
+						location.href=transport.responseText;
+					},
+					onFailure: function(transport)
+					{
+						alert(transport.responseText);
+					}
+				}); 
+				return false;
+			}
+		</script>
+	{%endif%}
 {% endblock %}
 
 {% block buttons %}
@@ -94,7 +102,7 @@
 			</fieldset>
 		</form>
 	{%else%}
-	<p>Um die Urlaubsabrechnung nutzen zu können, musst Du Dich <a href="{{ login_url|escape }}">anmelden</a>!</p>
+		<p>Um die Urlaubsabrechnung nutzen zu können, musst Du Dich <a href="{{ login_url|escape }}">anmelden</a>!</p>
 	{%endif%}
 	{% if projectsAll %}
 	<h1>Andere Projekte</h1>

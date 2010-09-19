@@ -6,7 +6,10 @@
 	<h2>Gewährte Zugriffsrechte</h2> 
 	<ul>
 	{% for r in rights %}
-		<li value="{{ r.key }}">{{ r.user.nickname }} =&gt; {{ r.right }}</li>
+		<li value="{{ r.key }}">
+			{{ r.user.nickname }} =&gt; {{ r.right }}
+			<a href="/access?project={{access_key}}&action=delete&key={{r.key}}">[delete]</a>
+		</li>
 	{% endfor %}
 	</ul>	
 	<h2>Anonyme Tickets</h2>
@@ -14,7 +17,7 @@
 	{% for t in tickets %}
 		<li>
 			<a href="/summary?project={{t.key}}_{{t.code}}">{{ t.user.nickname }} &rArr; {{ t.right }} (expires {{t.expires}})</a>
-			&nbsp;<a href="/access?project={{access_key}}&action=delete_ticket&ticket={{ t.key }}">[delete]</a>
+			&nbsp;<a href="/access?project={{access_key}}&action=delete&key={{ t.key }}">[delete]</a>
 		</li>
 	{% endfor %}
 	</ul>
@@ -33,7 +36,10 @@
 		<h2>Uneingelöste Einladungen</h2>
 		<ul>
 		{% for i in invitations %}
-			<li value="{{ i.key }}">{{ i.user.nickname }} &rArr; {{ i.right }} &nbsp;
+			<li value="{{ i.key }}">
+				{{ i.user.nickname }} &rArr; {{ i.right }} &nbsp;
+				<a href="/access?project={{access_key}}&action=delete&key={{i.key}}">[delete]</a>
+			</li>
 		{% endfor %}
 		</ul>
 	{% endif %}

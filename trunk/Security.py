@@ -46,6 +46,7 @@ def ProjectAccess(requested_permission):
 							self.user = ticket.user
 							self.project.local_name = ticket.local_name
 							self.project.settings = ticket
+							self.security_key =  ticket
 						else:					
 							self.project = models.Project.get(self.access_key)
 							# now we need login information to check any further rights
@@ -56,6 +57,7 @@ def ProjectAccess(requested_permission):
 								return
 							# we are logged in query for user project settings
 							settings = models.ProjectRights.gql("WHERE user=:user and project=:project", user=self.user, project=self.project).get();
+							self.security_key = settings
 							self.project.rights = Right_Admin if users.is_current_user_admin() else settings.right if settings else Right_None
 							# replace project name with local name				
 							self.project.local_name = settings.local_name if settings else None;
