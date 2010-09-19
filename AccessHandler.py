@@ -4,6 +4,7 @@ import random
 import models
 import datetime
 from BaseRequestHandler import BaseRequestHandler
+from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import mail
 						
@@ -54,13 +55,26 @@ class AccessHandler(BaseRequestHandler):
 		
 	@Security.ProjectAccess(Security.Right_Manage)
 	def	get(self):
-		if self.request.get('action', '') == 'delete_ticket' and self.request.get('ticket', '')!='':
-			ticket = models.Ticket.get(self.request.get('ticket', ''))
-			if ticket.project.key()!=self.project.key():
-				raise Exception("Unauthorized access!")
-			ticket.delete()
+		action = self.request.get('action', '')		
+		if action == "":
+			pass
+		elif action == "delete":
+			entity = db.get(self.request.get('key', ''))
+			if entity:
+				if entity.project.key() != self.project.key():
+					raise Exception("Access denied!")
+				if entity.right>self.project.rights:
+					raise Exception("Access denied!")
+				if not (isinstance(entity, models.Invitation) or isinstance(entity, models.Ticket) or isinstance(entity, models.ProjectRights)):
+					raise Exception("Invalid kind!")
+				if self.security_key.key()==entity.key():
+					raise Exception("Can't delete myself!")
+				#raise Exception("delete %s" % entity.kind())
+				entity.delete()
+		else:
+			raise Exception("Invalid action '%(action)s'!" % {'action':action})
 		self.generate('access', {
 				'rights': self.project.projectrights_set,
 				'invitations': self.project.invitation_set,
 				'tickets': self.project.ticket_set,
-		})
+		})		

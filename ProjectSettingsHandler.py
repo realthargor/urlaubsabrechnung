@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import models
 import Security
 from BaseRequestHandler import BaseRequestHandler
 								
