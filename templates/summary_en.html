@@ -18,95 +18,112 @@
 
 
 {% block body %}	
-	<h3>Ergebnis</h3>
-		<table class="smallFont">
+	{%if project.transactions %}
+		<h3>Ergebnis</h3>
+			<table class="smallFont">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Summe</th>
+						<th>Einzahlung</th>
+						<th>Auszahlung</th>
+						<th>Gruppenanteile</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for person in project.persons.values %}
+					<tr>
+						<td>{{person.name}}</td>
+						<td style="text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
+						<td style="text-align:right;">{{person.credit|floatformat:2}}{{project.currency}}</td>
+						<td style="text-align:right;">{{person.debit|floatformat:2}}{{project.currency}}</td>
+						<td style="text-align:right;">{{person.group_part|floatformat:2}}{{project.currency}}</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		<h3>Transaktionen</h3>
+		<table id="transactionTable" class="smallFont sortable">
 			<thead>
 				<tr>
-					<th>Name</th>
-					<th>Summe</th>
-					<th>Einzahlung</th>
-					<th>Auszahlung</th>
-					<th>Gruppenanteile</th>
+					<th class="sortable">Datum</th>
+					<th class="sortable">Was</th>
+					<th class="sortable" abbr="currency">Betrag</th>
+					<th class="sortable" abbr="currency">{{project.currency}} Wert</th>
+					<th class="sortable">Von</th>
+					<th class="sortable">An</th>
+					{% for person in project.persons.values %}
+						<th class="sortable" abbr="currency">{{person.name}}</th>
+					{% endfor %}
 				</tr>
 			</thead>
 			<tbody>
-			{% for person in project.persons.values %}
-				<tr>
-					<td>{{person.name}}</td>
-					<td style="text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
-					<td style="text-align:right;">{{person.credit|floatformat:2}}{{project.currency}}</td>
-					<td style="text-align:right;">{{person.debit|floatformat:2}}{{project.currency}}</td>
-					<td style="text-align:right;">{{person.group_part|floatformat:2}}{{project.currency}}</td>
-				</tr>
-			{% endfor %}
-			</tbody>
-		</table>
-	<h3>Transaktionen</h3>
-	<table id="transactionTable" class="smallFont sortable">
-		<thead>
-			<tr>
-				<th class="sortable">Datum</th>
-				<th class="sortable">Was</th>
-				<th class="sortable" abbr="currency">Betrag</th>
-				<th class="sortable" abbr="currency">{{project.currency}} Wert</th>
-				<th class="sortable">Von</th>
-				<th class="sortable">An</th>
-				{% for person in project.persons.values %}
-					<th class="sortable" abbr="currency">{{person.name}}</th>
-				{% endfor %}
-			</tr>
-		</thead>
-		<tbody>
-			{% for t in project.transactions %}
-			<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}" title="Letzte Änderung erfolgte am {{ t.lastmod|date:"Y-m-d" }} um {{ t.lastmod|time }} durch {{ t.user.nickname }}.">
-				<td>{{t.date|date:"Y-m-d"}}</td>
-				<td>{{t.text}}</td>
-				<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
-				<td style="text-align:right;">{{t.AmountBase|floatformat:2}}{{project.currency}}</td>
-				<td>{{t.source.name}}</td>
-				<td>{{t.dest.name}}</td>
-				{% for v in t.affected %}
-					{%if v.negative %}
-					<td style="color: red; text-align:right;">{{v.value|floatformat:2}}{{project.currency}}</td>
-					{%else%}
-						{%if v.positive %}
-						<td style="color: black; text-align:right;">{{v.value|floatformat:2}}{{project.currency}}</td>
+				{% for t in project.transactions %}
+				<tr id="{{ t.key }}" class="{% if t.check %}check{% endif %}" title="Letzte Änderung erfolgte am {{ t.lastmod|date:"Y-m-d" }} um {{ t.lastmod|time }} durch {{ t.user.nickname }}.">
+					<td>{{t.date|date:"Y-m-d"}}</td>
+					<td>{{t.text}}</td>
+					<td style="text-align:right;">{{t.ammount|floatformat:2}}{{t.CurrencyName}}</td>
+					<td style="text-align:right;">{{t.AmountBase|floatformat:2}}{{project.currency}}</td>
+					<td>{{t.source.name}}</td>
+					<td>{{t.dest.name}}</td>
+					{% for v in t.affected %}
+						{%if v.negative %}
+						<td style="color: red; text-align:right;">{{v.value|floatformat:2}}{{project.currency}}</td>
 						{%else%}
-						<td></td>
-						{% endif %}
-					{% endif %}
-				{% endfor %}  					
-			</tr>
-			{% endfor %}
-		</tbody>
-		<tfoot>
-			<tr class="results">
-				<td colspan="6">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
-				{% for person in project.persons.values %}
-					{%if person.sum_negative %}
-						<td style="color: red; text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
-					{%else%}
-						{%if person.sum_positive %}
-							<td style="color: black; text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
-						{%else%}
+							{%if v.positive %}
+							<td style="color: black; text-align:right;">{{v.value|floatformat:2}}{{project.currency}}</td>
+							{%else%}
 							<td></td>
+							{% endif %}
 						{% endif %}
-					{% endif %}
+					{% endfor %}  					
+				</tr>
 				{% endfor %}
-			</tr>
-		</tfoot>
-	</table>
-	<h3>Gruppen</h3>
-	<ul>
-		{% for group in project.groups.values %}
-		<li>{{group.name}} {{ group.credit_minus_debit|floatformat:2 }} (H:{{ group.credit|floatformat:2 }} S:{{ group.debit|floatformat:2 }}) &rArr;  {% for m in group.members %} {{m.name}}({{m.weight}}/{{group.sum}}={{m.part|floatformat:1}}%)&nbsp;{% endfor %}				
-		</li>
-		{% endfor %}
-	</ul>	
-	<h3>Währungen</h3>
-	<ul>
-		{% for c in project.currency_set %}
-			<li>{{c.factor}}&nbsp;{{project.currency}}&nbsp;=&nbsp;{{c.divisor}}&nbsp;{{c.name}}</li>
-		{% endfor %}
-	</ul>
+			</tbody>
+			<tfoot>
+				<tr class="results">
+					<td colspan="6">Endergebnis (Negativ=Soll, Positiv=Haben)</td>
+					{% for person in project.persons.values %}
+						{%if person.sum_negative %}
+							<td style="color: red; text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
+						{%else%}
+							{%if person.sum_positive %}
+								<td style="color: black; text-align:right;">{{person.sum|floatformat:2}}{{project.currency}}</td>
+							{%else%}
+								<td></td>
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+				</tr>
+			</tfoot>
+		</table>
+	{% else %}
+		<h3>Keine Transaktion / Neues Projekt</h3>		
+		<p>In dieser Abrechnung wurden noch keine Transaktionen eingetragen. Wahrscheinlich handelt es sich um ein neues Projekt. Sie haben folgende Möglichkeiten:
+		<ul>
+			<li>Zunächst sollten Sie mindestens zwei <a href="/accounts?project={{ access_key }}">Konten</a> erstellen und evtl. Gruppen definieren und die Zugehörigkeit von Konten angeben.</li>
+			<li>Anschließend können Sie <a href="/transactions?project={{ access_key }}">Transaktionen</a> eintragen.</li>
+			<li>Falls Sie verschiedene <a href="/transactions?currencies={{ access_key }}">Währungen</a> verwenden, können Sie deren Umrechnungskurse <a href="/transactions?currencies={{ access_key }}">hier</a> angeben.</li>
+			<li>Außerdem können Sie anderen Nutzern <a href="/access?project={{ access_key }}">Zugriff</a> zum Projekt per Email Einladung gewähren.</li>
+			<li>Weiterführende Informationen und <a href="/help?project={{ access_key }}">Hilfe</a> finden Sie <a href="/help?project={{ access_key }}">hier</a></li>
+		</ul>
+		</p>
+	{% endif %}
+	{%if project.groups.values %}
+		<h3>Gruppen</h3>
+		<ul>
+			{% for group in project.groups.values %}
+			<li>{{group.name}} {{ group.credit_minus_debit|floatformat:2 }} (H:{{ group.credit|floatformat:2 }} S:{{ group.debit|floatformat:2 }}) &rArr;  {% for m in group.members %} {{m.name}}({{m.weight}}/{{group.sum}}={{m.part|floatformat:1}}%)&nbsp;{% endfor %}				
+			</li>
+			{% endfor %}
+		</ul>	
+	{% endif %}
+	{%if project.currency_set %}
+		<h3>Währungen</h3>
+		<ul>
+			{% for c in project.currency_set %}
+				<li>{{c.factor}}&nbsp;{{project.currency}}&nbsp;=&nbsp;{{c.divisor}}&nbsp;{{c.name}}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
 {% endblock %}
