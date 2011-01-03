@@ -1,0 +1,30 @@
+{% extends "base_en.html" %}
+
+{% block buttons %}
+<span class="item">
+	{%if direct_link %}
+		<input type="button" onclick="location.href='/'" value="Startseite"/>
+	{%else%}
+		<input type="button" onclick="location.href='/'" value="Projektliste"/>
+	{%endif%}
+	{%if project %}
+		{%if project.RightView %}
+			<input type="button" onclick="location.href='/summary?project={{ access_key }}'" value="Report"/>
+		{%endif%}
+		{%if project.RightEdit %}
+			<input type="button" onclick="location.href='/transactions?project={{ access_key }}'" value="Transaktionen"/>
+			<input type="button" onclick="location.href='/accounts?project={{ access_key }}'" value="Konten"/>
+			<input type="button" onclick="location.href='/currencies?project={{ access_key }}'" value="Währungen"/>
+		{%endif%}
+		{%if project.RightManage %}			
+			<input type="button" onclick="location.href='/access?project={{ access_key }}'" value="Zugriff/Einladungen"/>
+		{%endif%}
+		{%if project.RightView %}
+			<input type="button" onclick="location.href='/projectsettings?project={{ access_key }}'" value="Einstellungen"/>
+		{%endif%}
+	{%endif%}
+</span>
+{% endblock %}
+
+{% block body %}
+{% endblock %}

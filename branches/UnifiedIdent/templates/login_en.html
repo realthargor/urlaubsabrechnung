@@ -1,0 +1,23 @@
+﻿{% extends "base_en.html" %}
+
+{% block head %}
+  <style type="text/css">
+  #body {
+    margin: 29px;
+    margin-top: 19px;
+  }
+
+  #body .buttons {
+    margin-top: 0.75em;
+  }
+
+  #body .buttons .item {
+    margin-right: 0.5em;
+  }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <p>Das ist die $LastChangedRevision$ Version der Online-Urlaubsabrechnung.</p>
+  <p>Zum Verwenden der Abrechnung müssen Sie sich mit einem Google Konto <a href="{{ login_url }}">hier</a> anmelden!</p>
+{% endblock %}

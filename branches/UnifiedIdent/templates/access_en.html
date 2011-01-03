@@ -1,0 +1,58 @@
+{% extends "project_base_en.html" %}
+
+{% block title %}Zugriffsrechte{% endblock %}
+
+{% block body %}
+	<h2>Gewährte Zugriffsrechte</h2> 
+	<ul>
+	{% for r in rights %}
+		<li value="{{ r.key }}">
+			{{ r.user.nickname }} =&gt; {{ r.right }}
+			<a href="/access?project={{access_key}}&action=delete&key={{r.key}}">[delete]</a>
+		</li>
+	{% endfor %}
+	</ul>	
+	<h2>Anonyme Tickets</h2>
+	<ul>
+	{% for t in tickets %}
+		<li>
+			<a href="/summary?project={{t.key}}_{{t.code}}">{{ t.user.nickname }} &rArr; {{ t.right }} (expires {{t.expires}})</a>
+			&nbsp;<a href="/access?project={{access_key}}&action=delete&key={{ t.key }}">[delete]</a>
+		</li>
+	{% endfor %}
+	</ul>
+	<form action="/access?project={{access_key}}" method="post" enctype="multipart/form-data">
+		Emailadresse
+		<input type="text" name="email" size="20" value=""/>
+		<select name="right">
+			<option 		  value="100">Nur lesen</option>
+			<option selected  value="200">Bearbeiten</option>
+			<option 		  value="500">Verwalten</option>
+			<option 		 value="1000">Eigner</option>
+		</select>
+		<input type="Submit" name="action" value="create_ticket"/>
+	</form>
+	{% if  invitations %}
+		<h2>Uneingelöste Einladungen</h2>
+		<ul>
+		{% for i in invitations %}
+			<li value="{{ i.key }}">
+				{{ i.user.nickname }} &rArr; {{ i.right }} &nbsp;
+				<a href="/access?project={{access_key}}&action=delete&key={{i.key}}">[delete]</a>
+			</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+	<h2>Einladungen versenden</h2>
+	<form action="/access?project={{access_key}}" method="post" enctype="multipart/form-data">
+		Emailadresse
+		<input type="text" name="email" size="20" value=""/>
+		<select name="right">
+			<option 		  value="100">Nur lesen</option>
+			<option selected  value="200">Bearbeiten</option>
+			<option 		  value="500">Verwalten</option>
+			<option 		 value="1000">Eigner</option>
+		</select>
+		<input type="Submit" name="action" value="invite"/>
+	</form>
+{% endblock %}

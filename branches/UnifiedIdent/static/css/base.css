@@ -1,0 +1,173 @@
+body {
+  font-family: Arial;
+  font-size: 10pt;
+}
+
+a:link {
+  color: #0000cc;
+}
+
+a:active {
+  color: red;
+}
+
+a:visited {
+  color: #551a8b;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: black;
+  background: none;
+  font-weight: normal;
+  margin: 0;
+  padding-top: .5em;
+  padding-bottom: .17em;
+  border-bottom: 1px solid #aaa;
+}
+
+h1 {
+  font-size: 188%;
+}
+
+h2 {
+  font-size: 150%;
+}
+
+h3, h4, h5, h6 {
+  border-bottom: none;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 132%;
+}
+
+pre, code {
+  color: #007000;
+  font-family: "bogus font here", monospace;
+  font-size: 10pt;
+}
+
+pre {
+  border: 1px solid silver;
+  background-color: #f5f5f5;
+  padding: 0.5em;
+  overflow: auto;
+  margin: 2em;
+}
+
+li {
+  margin-bottom: 0.25em;
+}
+
+table.smallFont {
+  font-size: 90%;
+}
+
+tr.transaction:hover {
+	background-color:silver;
+}
+tr.transaction{
+	hover:expression(this.onmouseover=new Function("this.style.background='silver';"),this.onmouseout=new Function("this.style.background='#ffffff';"));
+}
+
+.hidden {
+	visibility:hidden;
+	display:none;
+}
+
+.error {
+	color: red
+}
+
+tr.check {
+   background-color:yellow;
+}
+
+tr.results {
+   font-weight: bold;
+   background-color:silver;
+}
+
+form.transaction {
+	position:fixed; 
+	top:5%; 
+	left:5%; 
+	width:90%; 
+	height:90%; 
+	background-color:#eeeeee; 
+	z-index:1000;
+}
+
+form {  /* set width in form, not fieldset (still takes up more room w/ fieldset width */
+  font:100% verdana,arial,sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+fieldset {
+    color: #666;
+    background-color: #efefef;
+    border: solid 1px #d3d3d3;
+    }
+
+legend {
+/*	
+	font-size: 2em; 
+    font-weight: bold;
+    font-variant: small-caps;
+*/
+    color: #666;
+    background-color: #d3d3d3;
+    padding: 2px 6px;
+    margin-bottom: 8px;
+}
+
+label  {
+    font-weight: bold;
+    line-height: normal;
+    text-align: right;
+    margin-right: 10px;
+    position: relative;
+    display: block;
+    float: left;
+    width: 125px;
+}
+
+label.fieldLabel  {
+    display: inline;
+    float: none;
+}
+
+select.formInputWidth {
+	width: 300px;
+}
+
+select.formInputWidth option { 
+	width:290px; 
+}
+
+input.formInputWidth {
+	width: 300px;
+}
+
+button.buttonWidth {
+	width: 300px;
+}
+
+input.formInputButton  {
+    font-size: 1.2em;
+    vertical-align: middle;
+    font-weight: bolder;
+    text-align: center;
+    color: #300;
+    background: #f99 url(bg_button.png) repeat-x;
+    padding: 1px;
+    border: solid 1px #f66;
+    float: right; 
+    cursor: pointer;
+}
+	
+form br {
+	clear:left; /* setting clear on inputs didn't work consistently, so brs added for degrade */
+}

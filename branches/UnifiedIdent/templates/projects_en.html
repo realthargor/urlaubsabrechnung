@@ -1,0 +1,121 @@
+{% extends "base_en.html" %}
+
+{% block title %}
+	{%if user %}
+		Projektliste
+	{%else%}
+		Startseite
+	{%endif%}
+{% endblock %}
+
+{% block head %}
+	{%if user %}
+		<script type="text/javascript">
+			function project_DeleteClick(key)
+			{
+				new Ajax.Request("/", {   
+					method: 'post',
+					parameters: {
+						action: 'delete', 
+						project: key,
+					},
+					onSuccess: function(transport) 
+					{ 
+						location.href=transport.responseText;
+					},
+					onFailure: function(transport)
+					{
+						alert(transport.responseText);
+					}
+				}); 
+				return false;
+			}
+			
+			function project_AddClick(event)
+			{
+				new Ajax.Request("/", {   
+					method: 'post',
+					parameters: {
+						action: 'add', 
+						name: $F('project_name'),
+						currency: $F('project_currency'),					
+					},
+					onSuccess: function(transport) 
+					{ 
+						location.href=transport.responseText;
+					},
+					onFailure: function(transport)
+					{
+						alert(transport.responseText);
+					}
+				}); 
+				return false;
+			}
+		</script>
+	{%endif%}
+{% endblock %}
+
+{% block buttons %}
+<span class="item">
+</span>
+{% endblock %}
+
+{% block body %}
+	{% if message %}{{ message }}{% endif %}
+	<ul>
+	{% for prj in projects %}
+		<li>{{ prj.display_name }}
+			<a href="/summary?project={{ prj.key }}">[Report]</a>&nbsp;
+			{%if prj.RightEdit %}
+				<a href="/transactions?project={{ prj.key }}">[Transaktionen]</a>&nbsp;
+				<a href="/accounts?project={{ prj.key }}">[Konten]</a>&nbsp;
+				<a href="/currencies?project={{ prj.key }}">[Währungen]</a>&nbsp;
+			{%endif%}
+			{%if prj.RightManage %}			
+				<a href="/access?project={{ prj.key }}">[Zugriff/Einladungen]</a>&nbsp;			
+			{%endif%}
+			{%if prj.RightView %}
+				<a href="/projectsettings?project={{ prj.key }}">[Einstellungen]</a>&nbsp;
+			{%endif%}
+			{%if prj.last_access %}
+				<button id="project_remove" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ prj.key }}')">Projekt löschen</button>
+			{%else%}
+				<button id="project_remove" type="submit" name="Action" value="Delete" onclick="project_DeleteClick('{{ prj.key }}')">Projekt aus meiner Liste entfernen</button>
+			{%endif%}
+		</li>
+	{% endfor %}
+	</ul>
+	{%if user %}
+		<form id="newProjectForm" enctype="multipart/form-data" onsubmit="return false;">
+			<fieldset>
+				<legend>Neues Projekt anlegen...</legend>
+				<label for="project_name">Name</label>
+				<input id="project_name" type="text" name="TEXT" size="20" VALUE=""/>
+				<br/>
+							
+				<label for="project_currency">Grundwährung</label>
+				<input id="project_currency" type="text" name="TEXT" size="5" VALUE="€"/>
+				<br/>
+							
+				<label for="project_add">Projekt</label>
+				<button id="project_add" type="submit" name="Action" value="Add" onclick="project_AddClick()">Erstellen...</button>
+			</fieldset>
+		</form>
+	{%else%}
+		<p>Um die Urlaubsabrechnung nutzen zu können, musst Du Dich <a href="{{ login_url|escape }}">anmelden</a>!</p>
+	{%endif%}
+	{% if projectsAll %}
+	<h1>Andere Projekte</h1>
+		{% for project in projectsAll %}
+			<li>{{ project.name }}
+				<a href="/summary?project={{ project.key }}">[Report]</a>&nbsp;
+				<a href="/transactions?project={{ project.key }}">[Transaktionen]</a>&nbsp;
+				<ul>
+					{% for right in project.projectrights_set %}
+					<li>{{right.user.nickname}} &rArr; {{right.right}}</li>
+					{% endfor %}
+				</ul>
+			</li>
+		{% endfor %}	
+	{% endif %}
+{% endblock %}
