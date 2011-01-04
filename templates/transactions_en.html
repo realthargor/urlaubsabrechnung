@@ -8,7 +8,7 @@
 			method: 'post',
 			parameters: {
 				action: 'update', 
-				project: project_id, 
+				token: token_key, 
 				transaction: $F('transaction_key'),
 				date: $F('transaction_date'),
 				source: $F('transaction_source'),					
@@ -45,7 +45,7 @@
 			method: 'post',
 			parameters: {
 				action: 'delete', 
-				project: project_id, 
+				token: token_key, 
 				transaction: $F('transaction_key')
 			},
 			onSuccess: function(transport) 
@@ -100,7 +100,7 @@
 	{  			
 		new Ajax.Request("/transactions", {   
 			method: 'post',   
-			parameters: { action: 'list', project: project_id },
+			parameters: { action: 'list', token: token_key },
 			onSuccess: function(transport) { 
 				$('transactions').update(transport.responseText);
 				$$('tr.transaction').invoke('observe', 'click', transactionClick);
@@ -108,7 +108,7 @@
 		} );
 		new Ajax.Request("/accounts", {   
 			method: 'post',   
-			parameters: { action: 'list', project: project_id },
+			parameters: { action: 'list', token: token_key },
 			onSuccess: function(transport) { 
 				$('transaction_source').update(transport.responseText); 
 				$('transaction_dest').update(transport.responseText); 
@@ -116,7 +116,7 @@
 		} );
 		new Ajax.Request("/currencies", {   
 			method: 'post',   
-			parameters: { action: 'list', project: project_id },
+			parameters: { action: 'list', token: token_key },
 			onSuccess: function(transport) { 
 				$('transaction_currency').update(transport.responseText); 
 			}
@@ -130,7 +130,7 @@
 		<div id="transaction_edit_error" class="hidden error">Error message!</div><br/>
 		<legend>Transaktion</legend>
 		<input id="transaction_key" type="text" class="hidden" readonly="true" size="1" name="KEY" VALUE=""/>
-		<input id="project" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{ access_key }}"/>
+		<input id="token" type="text" class="hidden" readonly="true" size="1" name="PROJECT" VALUE="{{token.Token}}"/>
 		<br/>
 		
 		<label for="transaction_date">Datum</label>
@@ -142,7 +142,7 @@
 					
 		<label for="transaction_source">Von</label>
 		<select id="transaction_source" class="formInputWidth" name="SOURCE"><option>---</option></select>
-		<a href="/accounts?project={{access_key}}">[Konten]</a>
+		<a href="/accounts?token={{token.Token}}">[Konten]</a>
 		<br/>
 		
 		<label for="transaction_dest">An</label>

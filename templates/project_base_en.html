@@ -7,20 +7,20 @@
 	{%else%}
 		<input type="button" onclick="location.href='/'" value="Projektliste"/>
 	{%endif%}
-	{%if project %}
-		{%if project.RightView %}
-			<input type="button" onclick="location.href='/summary?project={{ access_key }}'" value="Report"/>
+	{%if token %}
+		{%if token.RightView %}
+			<input type="button" onclick="location.href='/summary?token={{token.Token}}'" value="Report"/>
 		{%endif%}
-		{%if project.RightEdit %}
-			<input type="button" onclick="location.href='/transactions?project={{ access_key }}'" value="Transaktionen"/>
-			<input type="button" onclick="location.href='/accounts?project={{ access_key }}'" value="Konten"/>
-			<input type="button" onclick="location.href='/currencies?project={{ access_key }}'" value="Währungen"/>
+		{%if token.RightEdit %}
+			<input type="button" onclick="location.href='/transactions?token={{token.Token}}'" value="Transaktionen"/>
+			<input type="button" onclick="location.href='/accounts?token={{token.Token}}'" value="Konten"/>
+			<input type="button" onclick="location.href='/currencies?token={{token.Token}}'" value="Währungen"/>
 		{%endif%}
-		{%if project.RightManage %}			
-			<input type="button" onclick="location.href='/access?project={{ access_key }}'" value="Zugriff/Einladungen"/>
+		{%if token.RightManage %}			
+			<input type="button" onclick="location.href='/access?token={{token.Token}}'" value="Zugriff/Einladungen"/>
 		{%endif%}
-		{%if project.RightView %}
-			<input type="button" onclick="location.href='/projectsettings?project={{ access_key }}'" value="Einstellungen"/>
+		{%if token.RightView %}
+			<input type="button" onclick="location.href='/projectsettings?token={{token.Token}}'" value="Einstellungen"/>
 		{%endif%}
 	{%endif%}
 </span>

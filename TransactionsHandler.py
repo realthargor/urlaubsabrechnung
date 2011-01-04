@@ -9,7 +9,7 @@ class TransactionsHandler(BaseRequestHandler):
 	def sendTransactionList(self):
 		self.generate('transaction_data',
 		{
-			'transactions': sorted(self.project.transaction_set, cmp=lambda x, y: cmp(x.date, y.date))
+			'transactions': sorted(self.token.project.transaction_set, cmp=lambda x, y: cmp(x.date, y.date))
 		})
 
 	# this handler handles all transaction transfer requests
@@ -23,10 +23,10 @@ class TransactionsHandler(BaseRequestHandler):
 			tkey = self.request.get('transaction', 'None')
 			if tkey == 'None':
 				transaction = Transaction()
-				transaction.project = self.project
+				transaction.project = self.token.project
 			else:
 				transaction = Transaction.get(tkey)
-				if transaction.project.key() != self.project.key():
+				if transaction.project.key() != self.token.project.key():
 					raise Exception("Project/Transaction mismatch")
 			# update / set fields
 			transaction.date = datetime.strptime(self.request.get('date', transaction.date.isoformat()), "%Y-%m-%d")
@@ -35,7 +35,7 @@ class TransactionsHandler(BaseRequestHandler):
 			transaction.ammount = float(self.request.get('ammount', str(transaction.ammount)).replace(',', '.'))
 			transaction.check = self.request.get('check', 'False') == 'True'
 			transaction.text = self.request.get('text', transaction.text)
-			transaction.user = self.user
+			transaction.changedby = self.token
 			# a None currency means we use the base currency!
 			c = self.request.get('currency', transaction.currency and transaction.currency.key())
 			transaction.currency = Currency.get(c) if c != "None" else None
@@ -52,7 +52,7 @@ class TransactionsHandler(BaseRequestHandler):
 		elif action == 'delete':
 			# add a new or update a transaction
 			transaction = Transaction.get(self.request.get('transaction', 'None'))
-			if transaction.project.key() != self.project.key():
+			if transaction.project.key() != self.token.project.key():
 				raise Exception("Project/Transaction mismatch")
 			transaction.delete()
 			# retransmit all transactions

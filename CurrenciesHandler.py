@@ -3,31 +3,31 @@
 import models
 import Security
 from BaseRequestHandler import BaseRequestHandler
-								
+
 class CurrenciesHandler(BaseRequestHandler):
 	@Security.ProjectAccess(Security.Right_Edit)
 	def	post(self):
 		action = self.request.get('action', 'list')
 		if action == 'list':
 			# add base currency of project
-			self.response.out.write('<option value="%(value)s">%(name)s</option>' % 
-				{'value':None, 'name':self.project.currency})
+			self.response.out.write('<option value="%(value)s">%(name)s</option>' %
+				{'value':None, 'name':self.token.project.currency})
 			# create a list of options against all accounts
-			for a in self.project.currency_set:
+			for a in self.token.project.currency_set:
 				self.response.out.write('<option value="%(value)s">%(name)s</option>' % {
 					'name':a.name,
 					'value':a.key()
 				})
-		
+
 		elif action == 'add':
 			# add a new currency
 			divisor = float(self.request.get('divisor', '1'))
 			if divisor < 0.01: raise Exception("Divisor must be greater or equal to 0.01")
 			factor = float(self.request.get('factor', '1'))
 			if factor < 0.01: raise Exception("Factor must be greater or equal to 0.01")
-			models.Currency(project=self.project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
+			models.Currency(project=self.token.project, name=self.request.get('name'), factor=factor, divisor=divisor).put()
 			# generate std output
-			self.generate('currencies', {'currencies': self.project.currency_set })
+			self.generate('currencies')
 
 		elif action == 'delete':
 			# delete existing currency
@@ -36,8 +36,8 @@ class CurrenciesHandler(BaseRequestHandler):
 				t.delete()
 			c.delete()
 			# generate std output
-			self.generate('currencies', {'currencies': self.project.currency_set })
-			
+			self.generate('currencies')
+
 		elif action == 'update':
 			# update existing currency
 			c = models.Currency.get(self.request.get('key'))
@@ -50,10 +50,10 @@ class CurrenciesHandler(BaseRequestHandler):
 			c.factor = factor
 			c.put()
 			# generate std output
-			self.generate('currencies', {'currencies': self.project.currency_set })			
+			self.generate('currencies')
 		else:
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
-		
+
 	@Security.ProjectAccess(Security.Right_Edit)
-	def	get(self):		
-		self.generate('currencies', {'currencies': self.project.currency_set })
+	def	get(self):
+		self.generate('currencies')

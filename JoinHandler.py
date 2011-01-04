@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from models import ProjectRights, Invitation
+from models import ProjectAccess, Invitation
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.db import BadKeyError
@@ -17,10 +17,10 @@ class JoinHandler(webapp.RequestHandler):
 			# only allow privilege increase, when the project and the code matches the stored Invitation instance
 			if int(self.request.get('code', 0))==i.code and str(self.request.get('project', ''))==str(i.project.key()):
 				# check for existing access to project
-				rights = ProjectRights.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=i.project).get()
+				rights = ProjectAccess.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=i.project).get()
 				# edit rights
 				if not rights:
-					rights = ProjectRights(project=i.project, user=users.GetCurrentUser(), right=i.right)
+					rights = ProjectAccess(project=i.project, user=users.GetCurrentUser(), right=i.right)
 				# possibly upgrade rights
 				if rights.right<i.right:
 					rights.right = i.right

@@ -18,23 +18,15 @@ class BaseRequestHandler(webapp.RequestHandler):
 		
 	"""Supplies a common template render function. """
 	def render(self, template_name, template_values={}):
-		if 'user' not in self.__dict__:
-			self.user = users.GetCurrentUser()			
-		if 'direct_link' not in self.__dict__:
-			self.direct_link = False
-		if 'project' not in self.__dict__:
-			self.project = None
-		if 'access_key' not in self.__dict__:
-			self.access_key = None
-		
+		if 'token' not in self.__dict__:
+			self.token = None
+
 		values = {
-		  'direct_link': self.direct_link,
-		  'access_key': self.access_key,
-		  'request': self.request,
-		  'user': self.user,
-		  'login_url': users.CreateLoginURL(self.request.uri),
-		  'logout_url': users.CreateLogoutURL('/'),
-		  'project': self.project,
+			'token': self.token,
+			'user':  users.get_current_user(),
+			'request': self.request,
+			'login_url': users.CreateLoginURL(self.request.uri),
+			'logout_url': users.create_logout_url("/")
 		}
 		values.update(template_values)
 		directory = os.path.dirname(__file__)

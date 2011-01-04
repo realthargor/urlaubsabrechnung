@@ -4,11 +4,11 @@
 
 {% block body %}
 	<ul> 
-	{% for c in currencies %}
+	{% for c in token.project.currency_set %}
 		<li>
-			<form action="/currencies?project={{access_key}}" method="post" enctype="multipart/form-data">
+			<form action="/currencies?token={{token.Token}}" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="key" size="6" value="{{c.key}}"/>
-				<input type="text" name="factor" size="6" value="{%if c.factor %}{{c.factor}}{%else%}1{%endif%}"/>{{ project.currency }} =
+				<input type="text" name="factor" size="6" value="{%if c.factor %}{{c.factor}}{%else%}1{%endif%}"/>{{ token.project.currency }} =
 				<input type="text" name="divisor" size="6" value="{{c.divisor}}"/>
 				<input type="text" name="name" size="6" value="{{c.name}}"/> 
 				<input type="Submit" name="action" value="update"/>
@@ -17,8 +17,8 @@
 		</li>
 	{% endfor %}
 		<li>
-			<form action="/currencies?project={{access_key}}" method="post" enctype="multipart/form-data">
-				<input type="text" name="factor" size="6" value="1"/>{{ project.currency }} =
+			<form action="/currencies?token={{token.Token}}" method="post" enctype="multipart/form-data">
+				<input type="text" name="factor" size="6" value="1"/>{{ token.project.currency }} =
 				<input type="text" name="divisor" size="6" value="1"/>
 				<input type="text" name="name" size="6" value="Name"/>
 				<input type="Submit" name="action" value="add"/>
