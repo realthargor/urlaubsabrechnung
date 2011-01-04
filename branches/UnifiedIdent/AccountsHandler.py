@@ -7,7 +7,7 @@ from django.utils import simplejson as json
 class AccountsHandler(BaseRequestHandler):
 	def listGroups(self, type, default=None):
 		# list remaining groups
-		for a in self.project.person_set:
+		for a in self.token.project.person_set:
 			if isinstance(a, type):
 				if default == None or default.key() == a.key():
 					self.response.out.write('<option selected value="%(value)s">%(name)s</option>' % {'name':a.name, 'value':a.key()})
@@ -55,7 +55,7 @@ class AccountsHandler(BaseRequestHandler):
 					m.put()
 			# add new memberships for all remaining items
 			for a in update_account_list:
-				models.Member(project=self.project, group=group, weight=member_weight, person=models.Person.get(a)).put()
+				models.Member(project=self.token.project, group=group, weight=member_weight, person=models.Person.get(a)).put()
 			# delete all members with weight 0
 			for member in models.Group.get(self.request.get('group')).member_set:
 				if member.weight == 0:
@@ -67,8 +67,8 @@ class AccountsHandler(BaseRequestHandler):
 		elif action == 'group_add':
 			# add a new group
 			newname = self.request.get('name')
-			self.project.CheckNewAccountName(newname)
-			group = models.Group(name=newname, project=self.project)
+			self.token.project.CheckNewAccountName(newname)
+			group = models.Group(name=newname, project=self.token.project)
 			group.put()
 			# list new remaining groups
 			self.listGroups(type=models.Group, default=group)
@@ -76,8 +76,8 @@ class AccountsHandler(BaseRequestHandler):
 		elif action == 'person_add':
 			# add a new person
 			newname = self.request.get('name')
-			self.project.CheckNewAccountName(newname)
-			person = models.Person(name=newname, project=self.project)
+			self.token.project.CheckNewAccountName(newname)
+			person = models.Person(name=newname, project=self.token.project)
 			person.put()
 			# list the persons
 			self.listGroups(type=models.Person, default=person)
@@ -93,7 +93,7 @@ class AccountsHandler(BaseRequestHandler):
 			# rename an account
 			account = models.Account.get(self.request.get('account'));
 			newname = self.request.get('name', account.name)
-			self.project.CheckNewAccountName(newname, account)
+			self.token.project.CheckNewAccountName(newname, account)
 			account.name = newname
 			account.put()
 			# list accounts
@@ -103,7 +103,7 @@ class AccountsHandler(BaseRequestHandler):
 			# rename an account
 			account = models.Account.get(self.request.get('account'));
 			newname = self.request.get('name', account.name)
-			self.project.CheckNewAccountName(newname, account)
+			self.token.project.CheckNewAccountName(newname, account)
 			account.name = newname
 			account.put()
 			# list accounts

@@ -1,19 +1,19 @@
 #!/usr/bin/env python
-from models import Project, ProjectRights
+from models import Project, ProjectAccess, ProjectAccessAuthenticated
 from google.appengine.api import users
 from BaseRequestHandler import BaseRequestHandler
 import Security
 
 from google.appengine.ext.webapp.util import login_required
-											
-class ProjectsHandler(BaseRequestHandler):	
+
+class ProjectsHandler(BaseRequestHandler):
 	@Security.ProjectAccess(Security.Right_None)
 	def	get(self):
-		self.generate('projects', { 
-			'projects':  Project.list(),
-			'projectsAll': Project.listAll() if users.is_current_user_admin() else [],  
+		self.generate('projects', {
+			'tokens':  ProjectAccess.ListUserProjects(),
+			'adminTokens': ProjectAccess.ListProjectsAsAdmin(),
 		})
-	
+
 	@Security.ProjectAccess(Security.Right_None)
 	def	post(self):
 		action = self.request.get('action', 'add')
@@ -26,19 +26,19 @@ class ProjectsHandler(BaseRequestHandler):
 			project = Project(name=self.request.get('name'), currency=self.request.get('currency'))
 			project.put()
 			# add access rights for this user to the new project
-			rights = ProjectRights(project=project, user=users.GetCurrentUser(), right=Security.Right_Owner)
-			rights.put()
+			token = ProjectAccessAuthenticated(project=project, user=users.get_current_user(), right=Security.Right_Owner, local_name="")
+			token.put()
 			# redirect to summary
-			self.response.out.write("/summary?project=%(key)s" % {'key':project.key()})
+			self.response.out.write("/summary?token=%(token)s" % {'token':token.Token()})
 		elif action == 'delete':
 			# remove me from the projects right list
 			project = Project.get(self.request.get('project', ''))
-			if (not project):
+			if (not token):
 				raise Exception("Unknown project!")
 			# check rights of current user for this project, and deny access if not permitable
-			rights = ProjectRights.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=project).get()
-			if rights:
-				rights.delete()
+			token = ProjectAccessAuthenticated.gql("WHERE user=:user and project=:project", user=users.get_current_user(), project=project).get()
+			if token:
+				token.delete()
 			# redirect to my page
 			self.response.out.write("/")
 		else:

@@ -13,48 +13,6 @@ class Project(db.Model):
 	currency = db.StringProperty()
 	state = db.IntegerProperty(default=0) # 0..open, 1..closing, 2..closed
 
-	""" returns all list of all projects the user actually has rights for """
-	@staticmethod
-	def list():
-		projects = []
-		for right in ProjectAccessAuthenticated.gql("WHERE user=:user AND right>0", user=users.get_current_user()):
-			# get project
-			project = right.project
-			project.rights = right.right
-			# calculate remaining number of owners
-			project.last_access = project.projectaccess_set.count()<2
-			# append users display name
-			project.display_name = right.local_name + " (" + project.name + ")" if right.local_name and right.local_name != '' else project.name
-			projects.append(project)
-		return projects
-
-	""" returns all list of ALL projects """
-	@staticmethod
-	def listAll():
-		projects = []
-		# super user sees all projects
-		if users.is_current_user_admin():
-			for p in Project.all():
-				p.rights = 65535
-				projects.append(p)
-		return projects
-
-	""" returns true, when the user is allowed to view the project report """
-	def RightView(self):
-		return self.rights >= Security.Right_View
-
-	""" returns true, when the user is allowed to edit the project """
-	def RightEdit(self):
-		return self.rights >= Security.Right_Edit;
-
-	""" returns true, when the user is allowed to edit the project """
-	def RightManage(self):
-		return self.rights >= Security.Right_Manage;
-
-	""" returns true, when the user is allowed to edit the project """
-	def RightOwner(self):
-		return self.rights >= Security.Right_Owner;
-
 	""" returns a list of endpoint accounts """
 	def Endpoints(self):
 		return filter(lambda a: a.IsEndpoint(), self.person_set)
@@ -122,6 +80,128 @@ class Project(db.Model):
 			person.sum_negative = person.sum<=-0.005
 			person.sum_positive = person.sum>=+0.005
 			person.group_part = person.sum - (person.credit - person.debit)
+
+			
+"""
+	Base class for any project access, the ancestor class should override the _str_(self) method to get a qualified name
+"""
+class ProjectAccess(db.Model):
+	project = db.ReferenceProperty(Project, required=True)
+	right = db.IntegerProperty()
+	local_name = db.StringProperty(default="")
+
+	def RightView(self): return self.right >= Security.Right_View
+	def RightEdit(self): return self.right >= Security.Right_Edit;
+	def RightManage(self): return self.right >= Security.Right_Manage;
+	def RightOwner(self): return self.right >= Security.Right_Owner;
+
+	"""
+		Creates a new ProjectAccess instance depending on the given token, when the token is empty None is returned
+	"""
+	@staticmethod
+	def GetFromToken(token_key):
+		if token_key=="": return None
+		token_data = token_key.split('_', 2)
+		if token_data[0]=="admin" and len(token_data)==2:
+			token = ProjectAccessAdmin.Create(token_data[1])
+		else:
+			token =  ProjectAccessTicket.get(token_data[0]) if len(token_data) == 2 else ProjectAccessAuthenticated.get(token_key)
+		token.CheckPermission(code=token_data[-1], requested_permission=Security.Right_Minimum)
+		return token
+		
+	"""
+		Returns the access token for a given project and user/ticket
+	"""
+	def Token(self):
+		return str(self.key())
+		
+	"""
+		Performs a permisson check for the requested permission, if the permission is not granted an exception is raised
+	"""
+	def CheckPermission(self, code=None, requested_permission=Security.Right_None):
+		if self.right < requested_permission:
+			raise Exception("Permission denied!")
+
+	"""
+		Returns a list of ProjectAccess objects for the current user or None, if not applicable
+	"""
+	@staticmethod
+	def ListUserProjects():
+		u = users.get_current_user()
+		return ProjectAccessAuthenticated.gql("WHERE user=:user AND right>=:minright", user=u, minright=Security.Right_Minimum) if u!=None else None
+
+	@staticmethod
+	def ListProjectsAsAdmin():
+		# super user sees all projects
+		return [ProjectAccessAdmin.Create(key=str(p.key())) for p in Project.all()] if users.is_current_user_admin() else None
+
+	"""
+		Returns the Projects Display Name defined by the current ProjectAccess
+	"""
+	def DisplayName(self):
+		return self.local_name + " (" + self.project.name + ")" if self.local_name and self.local_name != '' else self.project.name
+
+	"""
+		should return a meaningfull name identifying the user, e.g. the username or a ticket name, whatever
+	"""
+	def UserName(self):
+		return users.get_current_user().nickname()
+
+"""
+	Authenticated project access by a logged on super user
+"""
+class ProjectAccessAdmin(ProjectAccess):
+	@staticmethod
+	def Create(key):
+		return ProjectAccessAdmin(project=Project.get(key), right=Security.Right_Admin, local_name="")
+		
+	def CheckPermission(self, code=None, requested_permission=Security.Right_None):
+		if users.is_current_user_admin():
+			return
+		raise Exception("Permission denied!")
+
+	def Token(self):
+		return "admin_"+str(self.project.key())
+
+	def UserName(self):
+		return users.get_current_user().nickname() + " (Admin)"
+
+"""
+	Authenticated project access by a logged on user
+"""
+class ProjectAccessAuthenticated(ProjectAccess):
+	user = db.UserProperty(required=True)
+	def CheckPermission(self, code=None, requested_permission=Security.Right_None):
+		# check the ticket code and additionally check if the ticket expired
+		if users.get_current_user() != self.user:
+			raise Exception("Permission denied!")
+		return ProjectAccess.CheckPermission(self, code=code, requested_permission=requested_permission)
+
+	def UserName(self):
+		return self.user.nickname()
+
+
+"""
+	A Ticket is anonymous way to access a project for a given time
+"""
+class ProjectAccessTicket(ProjectAccess):
+	name = db.StringProperty(required=True)
+	code = db.IntegerProperty(required=True)
+	expires = db.DateTimeProperty()
+	
+	def CheckPermission(self, code=None, requested_permission=Security.Right_None):
+		# check the ticket code and additionally check if the ticket expired
+		if datetime.today() > self.expires or code != self.code:
+			raise Exception("Permission denied!")
+		return ProjectAccess.CheckPermission(self, code=code, requested_permission=requested_permission)
+	
+	def UserName(self):
+		return self.name
+	"""
+		Returns the access token for a given project and user/ticket
+	"""
+	def Token(self):
+		return str(self.key())+"_"+str(self.code)
 
 class Account(polymodel.PolyModel):
 	name = db.StringProperty(required=True)
@@ -225,65 +305,6 @@ class Transaction(db.Model):
 		self.dest.enquire(amount=self.AmountBase(), balance=balance, sign= -1)
 		self.source.enquire(amount=self.AmountBase(), balance=balance, sign= +1)
 		return balance
-
-"""
-	Base class for any project access, the ancestor class should override the _str_(self) method to get a qualified name
-"""
-class ProjectAccess(db.Model):
-	project = db.ReferenceProperty(Project, required=True)
-	right = db.IntegerProperty()
-	local_name = db.StringProperty(default="")
-
-	"""
-		Performs a permisson check for the requested permission, if the permission is not granted an exception is raised
-	"""
-	def CheckPermission(self, requested_permission=Security.Right_None):
-		if self.right < requested_permission:
-			raise Exception("Permission denied!")
-
-	"""
-		Returns a ProjectAccessList
-	"""
-	@staticmethod
-	def List(user=users.get_current_user(), minright=Security.Right_Minimum):
-		return ProjectAccessAuthenticated.gql("WHERE user=:user AND right>=:minright", user, minright):
-	
-	"""
-		Returns the Projects Display Name defined by the current ProjectAccess
-	"""
-	def DisplayName(self):
-		return self.local_name + " (" + self.project.name + ")" if self.local_name and self.local_name != '' else self.project.name
-
-	"""
-		should return a meaningfull name identifying the user, e.g. the username or a ticket name, whatever
-	"""
-	def AccessName(self):
-		pass
-
-"""
-	Authenticated project access by a logged on user
-"""
-class ProjectAccessAuthenticated(ProjectAccess)
-	user = db.UserProperty(required=True)
-	def AccessName(self):
-		return user.Name
-
-"""
-	A Ticket is anonymous way to access a project for a given time
-"""
-class ProjectAccessTicket(ProjectAccess):
-	name = db.StringProperty(required=True)
-	code = db.IntegerProperty(required=True)
-	expires = db.DateTimeProperty()
-	
-	def CheckPermission(self, requested_permission=Security.Right_None):
-		# additionally check if the ticket expired
-		if datetime.today() > ticket.expires:
-			raise Exception("Ticket expired!")
-		return super(ProjectAccessTicket, self).CheckPermission(requested_permission)
-	
-	def AccessName(self):
-		return name
 
 """
 	Invitation represents a not yet turned in access key to a project with the given rights

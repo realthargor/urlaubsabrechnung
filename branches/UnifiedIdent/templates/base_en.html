@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <title>Urlaubsabrechung{%if project %}, Projekt: "{{ project.display_name }}"{%endif%}</title>
+    <title>Urlaubsabrechung{%if token %}, Projekt: "{{ token.DisplayName }}"{%endif%}</title>
     <link href="/static/css/base.css" rel="stylesheet" type="text/css"/>
 	<link href="/static/css/chrome.css" rel="stylesheet" type="text/css"/>
     <link href="/static/css/datepick.css" rel="stylesheet" type="text/css"/>
@@ -10,8 +10,8 @@
 	<script type="text/javascript" src="/static/javascript/datepick.js"></script>
     {% block head %}{% endblock %}
 	<script type="text/javascript">
-		{%if project %}
-		project_id = "{{ access_key }}";
+		{%if token %}
+		token_key = "{{token.Token}}";
 		{%endif%}
 	    {% block script %}{% endblock %}
     </script>
@@ -20,28 +20,30 @@
     <div id="header">
       <div class="top">
         <div class="login">
-		{%if direct_link %}
-			Anonym als <span class="item nickname">{{ user.nickname }}</span> | 
-			<span class="item"><a href="/">Urlaubsabrechung Hauptseite</a></span>
+		{%if token %}
+			<span class="item nickname">{{token.UserName}}</span>
+			{%if user %}
+				| <span class="item"><a href="{{ logout_url|escape }}">Abmelden</a></span>
+			{% endif %}
 		{% else %}
-			{% if user %}            
-				<span class="item nickname">{{ user.nickname }}</span> | <span class="item"><a href="{{ logout_url|escape }}">Abmelden</a></span>
-			{%else%}
+			{%if user %}
+				<span class="item"><a href="{{ logout_url|escape }}">Abmelden</a></span>
+			{% else %}
 				<span class="item"><a href="{{ login_url|escape }}">Anmelden</a></span>
-			{%endif%}
+			{% endif %}
 		{% endif %}
         </div>
-        <a href="/"><div class="logo">Urlaubsabrechnung{%if project %}, Projekt: "{{ project.display_name }}"{%endif%}&nbsp;-&nbsp;{% block title %}{% endblock %}</div></a>
+        <a href="/"><div class="logo">Urlaubsabrechnung{%if token %}, Projekt: "{{ token.DisplayName }}"{%endif%}&nbsp;-&nbsp;{% block title %}{% endblock %}</div></a>
       </div>
       <div class="bottom">
         <div class="attribution">
-			{{ project.display_name }}
+			{{token.DisplayName}}
         </div>
         <div class="buttons">
 	        {% block buttons %}
 	        {% endblock %}
 			<span class="item">
-				<input type="button" onclick="location.href='/help{%if project%}?project={{access_key}}{%endif%}'" value="Hilfe"/>
+				<input type="button" onclick="location.href='/help{%if token%}?token={{token.Token}}{%endif%}'" value="Hilfe"/>
 			</span>
         </div>
         <div style="clear: both"></div>

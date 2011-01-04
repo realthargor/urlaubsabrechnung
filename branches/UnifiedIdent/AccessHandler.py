@@ -16,14 +16,14 @@ class AccessHandler(BaseRequestHandler):
 			if len(self.request.get('email', ''))<2:
 				raise Exception("Specify email!")
 			invitation = models.Invitation(				
-				   project=self.project, 
+				   project=self.token.project, 
 				   user=users.User(email=self.request.get('email')), 
-				   right=min(int(self.request.get('right')),self.project.rights), 
+				   right=min(int(self.request.get('right')),self.token.right), 
 				   code=random.randint(0, 2 << 31))
 			invitation.put()
 			message = mail.EmailMessage(
 				sender=self.user.email(), 
-				subject="Einladung " + self.project.display_name + " Urlaubsabrechung")
+				subject="Einladung " + self.token.DisplayName + " Urlaubsabrechung")
 			message.to = invitation.user.email()
 			message.html = self.render('invite_mail_en.html', { 'invitation': invitation })
 			message.send()
@@ -31,16 +31,16 @@ class AccessHandler(BaseRequestHandler):
 			if len(self.request.get('email', ''))<2:
 				raise Exception("Specify email!")
 			ticket = models.Ticket(
-				project=self.project, 
+				project=self.token.project, 
 				user=users.User(email=self.request.get('email')), 
-				right=min(int(self.request.get('right')),self.project.rights),
+				right=min(int(self.request.get('right')),self.token.right),
 				expires=datetime.datetime.today() + datetime.timedelta(days=365), 
 				code=random.randint(0, 2 << 31)
 			)
 			ticket.put()			
 			message = mail.EmailMessage(
 				sender=self.user.email(), 
-				subject="Einladung " + self.project.display_name + " Urlaubsabrechung")
+				subject="Einladung " + self.token.DisplayName + " Urlaubsabrechung")
 			message.to = ticket.user.email()
 			message.html = self.render('ticket_mail_en.html', { 'ticket': ticket })
 			message.send()
@@ -48,9 +48,9 @@ class AccessHandler(BaseRequestHandler):
 			raise Exception("Unknown action '%(action)s'!" % {'action':action})
 		# generate std output
 		self.generate('access', {
-				'rights': self.project.projectrights_set,
-				'invitations': self.project.invitation_set,
-				'tickets': self.project.ticket_set,
+				'rights': self.token.project.projectaccess_set,
+				'invitations': self.token.project.invitation_set,
+				'tickets': None,
 		})
 		
 	@Security.ProjectAccess(Security.Right_Manage)
@@ -74,7 +74,7 @@ class AccessHandler(BaseRequestHandler):
 		else:
 			raise Exception("Invalid action '%(action)s'!" % {'action':action})
 		self.generate('access', {
-				'rights': self.project.projectrights_set,
+				'rights': self.token.project.projectaccess_set,
 				'invitations': self.project.invitation_set,
-				'tickets': self.project.ticket_set,
+				'tickets': None,
 		})		

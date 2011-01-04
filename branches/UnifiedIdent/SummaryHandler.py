@@ -6,6 +6,6 @@ class SummaryHandler(BaseRequestHandler):
 	@Security.ProjectAccess(Security.Right_View)
 	def	get(self):
 		# calculate the result, this adds additional result fields to the self.project object
-		self.project.CalculateResult();
+		self.token.project.CalculateResult();
 		# generate output
 		self.generate('summary');
