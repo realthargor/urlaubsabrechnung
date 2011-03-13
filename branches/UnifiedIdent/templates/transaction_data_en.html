@@ -6,6 +6,6 @@
 	<td>{{t.ammount}}</td>
 	<td value="{{ t.currency.key }}">{% if t.currency %} {{ t.currency.name }} {% else %} {{ token.project.currency }} {% endif %}</td>
 	<td check="{{ t.check }}">{{ t.text }}</td>
-	<td>>{{t.changedby.UserName}} on {{ t.lastmod }}</td>
+	<td>{{t.changedby.UserName}} on {{ t.lastmod }}</td>
 </tr>
 {% endfor %}

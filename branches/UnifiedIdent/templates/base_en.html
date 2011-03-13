@@ -27,6 +27,7 @@
 			{% endif %}
 		{% else %}
 			{%if user %}
+				<span class="item nickname">{{user.nickname}}</span> |
 				<span class="item"><a href="{{ logout_url|escape }}">Abmelden</a></span>
 			{% else %}
 				<span class="item"><a href="{{ login_url|escape }}">Anmelden</a></span>
