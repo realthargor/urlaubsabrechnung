@@ -3,18 +3,18 @@
 {% block title %}Projekteinstellungen{% endblock %}
 
 {% block body %}
-	<form action="/projectsettings?project={{access_key}}" method="post" enctype="multipart/form-data">
+	<form action="/projectsettings?token={{token.Token}}" method="post" enctype="multipart/form-data">
 		<fieldset>
-			<legend>'{{project.name}}' - Einstellungen</legend>
-			{%if project.RightManage %}
+			<legend>'{{token.DisplayName}}' - Einstellungen</legend>
+			{%if token.RightManage %}
 				<label for="project_name">Name</label>
-				<input id="project_name" type="text" name="project_name" size="12" value="{{project.name}}"/> <br />
+				<input id="project_name" type="text" name="project_name" size="12" value="{{token.project.name}}"/> <br />
 			{%endif	%}
 			<label for="local_name">Mein Name</label>
-			<input id="local_name" type="text" name="local_name" size="12" value="{{project.display_name}}"/> <br />
-			{%if project.RightEdit %}
+			<input id="local_name" type="text" name="local_name" size="12" value="{{token.local_name}}"/> <br />
+			{%if token.RightEdit %}
 				<label for="project_currency">Währung</label>
-				<input id="project_currency" type="text" name="project_currency" size="12" value="{{project.currency}}"/> <br />
+				<input id="project_currency" type="text" name="project_currency" size="12" value="{{token.project.currency}}"/> <br />
 			{%endif	%}
 			<label for="update">&nbsp;</label>
 			<input id="update" type="Submit" name="action" value="update"/><br />

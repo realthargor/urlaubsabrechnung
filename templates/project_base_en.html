@@ -2,12 +2,10 @@
 
 {% block buttons %}
 <span class="item">
-	{%if direct_link %}
-		<input type="button" onclick="location.href='/'" value="Startseite"/>
-	{%else%}
-		<input type="button" onclick="location.href='/'" value="Projektliste"/>
-	{%endif%}
 	{%if token %}
+		{%if token.HasProjectList %}
+			<input type="button" onclick="location.href='/'" value="Projektliste"/>
+		{%endif%}
 		{%if token.RightView %}
 			<input type="button" onclick="location.href='/summary?token={{token.Token}}'" value="Report"/>
 		{%endif%}
@@ -22,6 +20,8 @@
 		{%if token.RightView %}
 			<input type="button" onclick="location.href='/projectsettings?token={{token.Token}}'" value="Einstellungen"/>
 		{%endif%}
+	{%else%}
+		<input type="button" onclick="location.href='/'" value="Startseite"/>
 	{%endif%}
 </span>
 {% endblock %}

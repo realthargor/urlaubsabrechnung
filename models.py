@@ -146,6 +146,9 @@ class ProjectAccess(db.Model):
 	"""
 	def UserName(self):
 		return users.get_current_user().nickname()
+		
+	def HasProjectList(self):
+		return False
 
 """
 	Authenticated project access by a logged on super user
@@ -153,7 +156,7 @@ class ProjectAccess(db.Model):
 class ProjectAccessAdmin(ProjectAccess):
 	@staticmethod
 	def Create(key):
-		return ProjectAccessAdmin(project=Project.get(key), right=Security.Right_Admin, local_name="")
+		return ProjectAccessAdmin(project=Project.get(key), right=Security.Right_Admin, local_name="AdminMode")
 		
 	def CheckPermission(self, code=None, requested_permission=Security.Right_None):
 		if users.is_current_user_admin():
@@ -165,6 +168,9 @@ class ProjectAccessAdmin(ProjectAccess):
 
 	def UserName(self):
 		return users.get_current_user().nickname() + " (Admin)"
+	
+	def HasProjectList(self):
+		return True
 
 """
 	Authenticated project access by a logged on user
@@ -180,6 +186,8 @@ class ProjectAccessAuthenticated(ProjectAccess):
 	def UserName(self):
 		return self.user.nickname()
 
+	def HasProjectList(self):
+		return True
 
 """
 	A Ticket is anonymous way to access a project for a given time
