@@ -101,7 +101,7 @@ class ProjectAccess(db.Model):
 	@staticmethod
 	def GetFromToken(token_key):
 		if token_key=="": return None
-		token_data = token_key.split('_', 2)
+		token_data = token_key.rsplit('_', 1)
 		if token_data[0]=="admin" and len(token_data)==2:
 			token = ProjectAccessAdmin.Create(token_data[1])
 		else:
