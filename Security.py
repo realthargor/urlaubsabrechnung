@@ -30,10 +30,10 @@ def ProjectAccess(requested_permission):
 						if requested_permission > Right_None:
 							self.redirect("/")
 							return
-					else:			
+					else:
 						# first we check if the project key is a  "anonymous" ticket, we use this as
-						# we can see this, by splitting the project key at '_'
-						ticket_data = self.access_key.split('_', 2)
+						# we can see this, by splitting the project key at '_' (seen from the end)
+						ticket_data = self.access_key.rsplit('_', 1)
 						# direct link is set to true, whenever there is a direct link to a specific project
 						self.direct_link = len(ticket_data) == 2
 						if self.direct_link:
@@ -47,7 +47,7 @@ def ProjectAccess(requested_permission):
 							self.project.local_name = ticket.local_name
 							self.project.settings = ticket
 							self.security_key =  ticket
-						else:					
+						else:
 							self.project = models.Project.get(self.access_key)
 							# now we need login information to check any further rights
 							self.user = users.get_current_user()
