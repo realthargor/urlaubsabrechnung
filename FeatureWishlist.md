@@ -1,0 +1,6 @@
+# Feature wishlist #
+Since the project is pretty new. Many features wishes seem very basic, so this list has currently more the status of a todo list.
+
+
+# Details #
+  * delete access rights
